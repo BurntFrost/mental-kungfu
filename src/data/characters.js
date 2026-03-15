@@ -7,6 +7,7 @@ export const CHARACTERS = {
     philosophy: "Capability implied through stillness. The legend precedes the man — violence is a last resort that never feels like one.",
     source: "John Wick",
     signatureQuote: "People keep asking if I'm back. Yeah, I'm thinking I'm back.",
+    color: "#ef4444",
   },
   durden: {
     id: "durden",
@@ -16,6 +17,7 @@ export const CHARACTERS = {
     philosophy: "The existential mirror that fights back. You defeat yourself — he just shows you where.",
     source: "Fight Club",
     signatureQuote: "It's only after we've lost everything that we're free to do anything.",
+    color: "#f97316",
   },
   six: {
     id: "six",
@@ -25,6 +27,7 @@ export const CHARACTERS = {
     philosophy: "Quiet professionalism with zero ego. A ghost who gets the job done before anyone knows he was there.",
     source: "The Gray Man",
     signatureQuote: "I don't have feelings. I have objectives.",
+    color: "#64748b",
   },
   specter: {
     id: "specter",
@@ -34,6 +37,7 @@ export const CHARACTERS = {
     philosophy: "The outcome is already decided — the courtroom is just theater. Dominance as procedure.",
     source: "Suits",
     signatureQuote: "I don't play the odds. I play the man.",
+    color: "#eab308",
   },
   seven: {
     id: "seven",
@@ -43,6 +47,7 @@ export const CHARACTERS = {
     philosophy: "Emotional irrelevance as a weapon. Efficiency without sentiment — your feelings are not her variable.",
     source: "Star Trek: Voyager",
     signatureQuote: "Fun will now commence.",
+    color: "#06b6d4",
   },
   slevin: {
     id: "slevin",
@@ -52,6 +57,7 @@ export const CHARACTERS = {
     philosophy: "Casual control with a hidden hand. Everyone thinks they're running the play — Slevin wrote the script.",
     source: "Lucky Number Slevin",
     signatureQuote: "The unlucky are nothing more than a frame of reference for the lucky.",
+    color: "#8b5cf6",
   },
   capa: {
     id: "capa",
@@ -61,6 +67,7 @@ export const CHARACTERS = {
     philosophy: "Existential weight at cosmic scale. When you've stared into the sun, nothing on earth intimidates.",
     source: "Sunshine",
     signatureQuote: "At the end of time, a moment of grace.",
+    color: "#fb923c",
   },
   snape: {
     id: "snape",
@@ -70,6 +77,7 @@ export const CHARACTERS = {
     philosophy: "Surgical cruelty wrapped in restraint. Every word is a scalpel — he doesn't insult you, he dissects you.",
     source: "Harry Potter",
     signatureQuote: "Obviously.",
+    color: "#475569",
   },
   spock: {
     id: "spock",
@@ -79,6 +87,7 @@ export const CHARACTERS = {
     philosophy: "Emotion is noise. Logic is signal. He doesn't dismiss your feelings — he simply never received them.",
     source: "Star Trek",
     signatureQuote: "Live long and prosper.",
+    color: "#3b82f6",
   },
   stark: {
     id: "stark",
@@ -88,6 +97,7 @@ export const CHARACTERS = {
     philosophy: "Intellect weaponized as charm. He's already solved the problem — the banter is just him waiting for you to catch up.",
     source: "Marvel",
     signatureQuote: "I am Iron Man.",
+    color: "#dc2626",
   },
   thanos: {
     id: "thanos",
@@ -97,6 +107,7 @@ export const CHARACTERS = {
     philosophy: "The universe bends toward his conclusion. He doesn't threaten — he informs you of what's already happening.",
     source: "Marvel",
     signatureQuote: "I am inevitable.",
+    color: "#a855f7",
   },
   batman: {
     id: "batman",
@@ -106,6 +117,7 @@ export const CHARACTERS = {
     philosophy: "Fear is a tool. Preparation is a religion. He already knows your move — he's just deciding how much it should hurt.",
     source: "DC",
     signatureQuote: "I'm Batman.",
+    color: "#334155",
   },
   strange: {
     id: "strange",
@@ -115,6 +127,7 @@ export const CHARACTERS = {
     philosophy: "He's seen 14 million outcomes. Your plan wasn't in any of them. Arrogance backed by omniscience.",
     source: "Marvel",
     signatureQuote: "We're in the endgame now.",
+    color: "#14b8a6",
   },
   lecter: {
     id: "lecter",
@@ -124,6 +137,7 @@ export const CHARACTERS = {
     philosophy: "He doesn't threaten — he diagnoses. Sees through every mask instantly. His calm is more terrifying than violence because he already knows what you're hiding.",
     source: "Silence of the Lambs",
     signatureQuote: "A census taker once tried to test me. I ate his liver with some fava beans.",
+    color: "#7c3aed",
   },
   chigurh: {
     id: "chigurh",
@@ -133,6 +147,7 @@ export const CHARACTERS = {
     philosophy: "Zero emotion, zero negotiation. Not cruel — inevitable. Your choices led you here, and now it's decided. The coin doesn't care.",
     source: "No Country for Old Men",
     signatureQuote: "What's the most you've ever lost on a coin toss?",
+    color: "#94a3b8",
   },
   joker: {
     id: "joker",
@@ -142,6 +157,7 @@ export const CHARACTERS = {
     philosophy: "Exposes the fragility of every system, rule, and moral code. Doesn't want to win — wants to prove your entire framework is a lie you tell yourself.",
     source: "The Dark Knight",
     signatureQuote: "Why so serious?",
+    color: "#22c55e",
   },
   heisenberg: {
     id: "heisenberg",
@@ -151,6 +167,7 @@ export const CHARACTERS = {
     philosophy: "The transformation from invisible to untouchable. Built everything from nothing through sheer will. He is the danger — and he needs you to understand that.",
     source: "Breaking Bad",
     signatureQuote: "I am the one who knocks.",
+    color: "#f59e0b",
   },
   rorschach: {
     id: "rorschach",
@@ -160,6 +177,7 @@ export const CHARACTERS = {
     philosophy: "No compromise, no flexibility, no fear. The world bends or it breaks — he won't. Moral force so rigid it becomes its own gravity.",
     source: "Watchmen",
     signatureQuote: "I'm not locked in here with you. You're locked in here with me.",
+    color: "#78716c",
   },
 };
 

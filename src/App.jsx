@@ -12,6 +12,8 @@ import EmotionChips from "./components/EmotionChips.jsx";
 import FilterChips from "./components/FilterChips.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import Toast from "./components/Toast.jsx";
+import BackgroundPlasma from "./components/BackgroundPlasma.jsx";
+import { CHARACTERS } from "./data/characters.js";
 
 const CSS = `
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -68,6 +70,7 @@ export default function MentalKungFuApp() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const toastTimer = useRef(null);
   const scrollRef = useRef(null);
+  const lastSelectedChar = useRef(null);
 
   // Data hooks
   const { savedLines, savedSet, toggleSave } = useSavedLines();
@@ -102,6 +105,11 @@ export default function MentalKungFuApp() {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+    if (lastSelectedChar.current === id) {
+      lastSelectedChar.current = null;
+    } else {
+      lastSelectedChar.current = id;
+    }
   }, []);
 
   const toggleMood = useCallback((mood) => {
@@ -127,6 +135,10 @@ export default function MentalKungFuApp() {
       return next;
     });
   }, []);
+
+  const plasmaColor = activeCharacters.size > 0 && lastSelectedChar.current
+    ? CHARACTERS[lastSelectedChar.current]?.color ?? null
+    : null;
 
   // Build forged lines for the unified feed
   const forgedFeedLines = useMemo(() => {
@@ -163,15 +175,18 @@ export default function MentalKungFuApp() {
     setActiveCategories(new Set());
     setSavedOnly(false);
     setSearch("");
+    lastSelectedChar.current = null;
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   return (
     <>
+      <BackgroundPlasma color={plasmaColor} />
       <style>{CSS}</style>
       <div ref={scrollRef} style={{
         maxWidth: 720, margin: "0 auto", minHeight: "100vh",
         paddingBottom: 70, fontFamily: "'Outfit',sans-serif",
+        position: "relative", zIndex: 1, isolation: "isolate",
       }}>
         {/* Header */}
         <div style={{ padding: "16px 16px 0", textAlign: "center" }}>
