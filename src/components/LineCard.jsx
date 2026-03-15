@@ -56,12 +56,14 @@ export default function LineCard({ line, category, character, copied, onCopy, on
         {emotions.map(e => (
           <span
             key={e}
+            className="cat-tag"
             style={{
               fontSize: 7, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
               color: `${EMOTION_META[e].color}99`,
             }}
           >
             {EMOTION_META[e].icon} {e}
+            {EMOTION_META[e].desc && <span className="cat-tip">{EMOTION_META[e].desc}</span>}
           </span>
         ))}
         {copied && (

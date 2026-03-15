@@ -24,10 +24,10 @@ export function getEmotionsForCategory(category) {
 }
 
 export const EMOTION_META = {
-  Angry:          { icon: "😠", color: "#ef4444" },
-  Insecure:       { icon: "😟", color: "#a855f7" },
-  Disrespected:   { icon: "😤", color: "#f59e0b" },
-  Anxious:        { icon: "😰", color: "#06b6d4" },
-  Challenged:     { icon: "⚔️", color: "#ec4899" },
-  Underestimated: { icon: "😏", color: "#3b82f6" },
+  Angry:          { icon: "😠", color: "#ef4444", desc: "Lines that neutralize rage with cold control" },
+  Insecure:       { icon: "😟", color: "#a855f7", desc: "Lines that rebuild unshakeable self-belief" },
+  Disrespected:   { icon: "😤", color: "#f59e0b", desc: "Lines that reframe disrespect as irrelevance" },
+  Anxious:        { icon: "😰", color: "#06b6d4", desc: "Lines that replace anxiety with certainty" },
+  Challenged:     { icon: "⚔️", color: "#ec4899", desc: "Lines that turn confrontation into dominance" },
+  Underestimated: { icon: "😏", color: "#3b82f6", desc: "Lines that make them regret counting you out" },
 };
