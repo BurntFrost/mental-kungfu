@@ -1,6 +1,6 @@
 /**
  * Mental Kung Fu — Category Taxonomy
- * 10 psychological categories × 6 lines each = 60 total lines
+ * 10 psychological categories × ~9 lines each = 90 total lines
  * Each line tagged with a character archetype energy
  */
 
@@ -16,6 +16,9 @@ export const CATEGORIES = {
       { line: "That was supposed to hurt? Recalibrate.", character: "slevin" },
       { line: "You tried to expose me. All you did was advertise me.", character: "slevin" },
       { line: "You think you're testing me. I'm the one grading.", character: "specter" },
+      { line: "Turn to page 394. That's where I dismantled your argument last time.", character: "snape" },
+      { line: "You tried to corner me. Fascinating — you cornered yourself.", character: "spock" },
+      { line: "You just handed me the blueprint to your insecurity. Thanks.", character: "stark" },
     ],
   },
   SCALE: {
@@ -29,6 +32,9 @@ export const CATEGORIES = {
       { line: "Your ceiling is my foundation.", character: "wick" },
       { line: "You measured the room. I designed the blueprint.", character: "six" },
       { line: "You're competing for a seat. I built the table.", character: "wick" },
+      { line: "You think the suit makes the man? I built the suit. And the man.", character: "stark" },
+      { line: "I've seen dimensions you can't spell. Your scale is adorable.", character: "strange" },
+      { line: "You call it ambition. I call it the bare minimum.", character: "thanos" },
     ],
   },
   TEMPO: {
@@ -42,6 +48,8 @@ export const CATEGORIES = {
       { line: "You're loading. I've already shipped.", character: "six" },
       { line: "You finished planning. I finished executing. Tuesday.", character: "six" },
       { line: "You're building momentum. I'm already coasting on results.", character: "six" },
+      { line: "I built the prototype while you were still writing the spec.", character: "stark" },
+      { line: "I've already seen how this ends. Fourteen million times.", character: "strange" },
     ],
   },
   INDIFFERENCE: {
@@ -55,6 +63,9 @@ export const CATEGORIES = {
       { line: "I don't have enemies. I have people I haven't noticed yet.", character: "wick" },
       { line: "I didn't ignore you on purpose. You just weren't a variable.", character: "seven" },
       { line: "You keep showing up. I keep not adjusting.", character: "seven" },
+      { line: "Your presence has been noted. And filed under irrelevant.", character: "snape" },
+      { line: "Your emotional state is not a factor in my calculations.", character: "spock" },
+      { line: "I don't have a list of enemies. I have a list of things to do. You're not on either.", character: "batman" },
     ],
   },
   DISMISSAL: {
@@ -68,6 +79,9 @@ export const CATEGORIES = {
       { line: "Cute strategy. Did it come with instructions?", character: "slevin" },
       { line: "Your best move was interesting. My default was better.", character: "specter" },
       { line: "That was your A-game? I was warming up the bench.", character: "specter" },
+      { line: "Clearly, fame isn't everything. Is it, Mr. Potter?", character: "snape" },
+      { line: "Your strategy had three flaws. I stopped counting after the first.", character: "strange" },
+      { line: "That was your play? I've seen better plans from interns.", character: "stark" },
     ],
   },
   STOIC: {
@@ -81,6 +95,8 @@ export const CATEGORIES = {
       { line: "Pressure doesn't build diamonds. Discipline does. I'm the proof.", character: "capa" },
       { line: "I removed you from the equation. The math got better.", character: "seven" },
       { line: "Your turbulence is not my weather.", character: "wick" },
+      { line: "Fear is a tool. I just use it more honestly than most.", character: "batman" },
+      { line: "Your anger is illogical. My calm is structural.", character: "spock" },
     ],
   },
   INEVITABILITY: {
@@ -94,6 +110,9 @@ export const CATEGORIES = {
       { line: "I don't rush because the outcome already has my name on it.", character: "seven" },
       { line: "The result was decided before you entered the room. I just haven't filed the paperwork.", character: "specter" },
       { line: "I don't race. I set the finish line.", character: "seven" },
+      { line: "I am inevitable. You are... temporary.", character: "thanos" },
+      { line: "The outcome was never in question. Only the suffering was optional.", character: "thanos" },
+      { line: "I prepared for this Tuesday. You prepared for this your whole life.", character: "batman" },
     ],
   },
   CONTROL: {
@@ -107,6 +126,9 @@ export const CATEGORIES = {
       { line: "You found a loophole. I built the loop.", character: "slevin" },
       { line: "You're playing chess. I'm playing the chess player.", character: "durden" },
       { line: "The game changed. You weren't notified.", character: "durden" },
+      { line: "You think you're in control? I rewrote the variables while you were solving for X.", character: "strange" },
+      { line: "I don't bend the rules. I bend reality. The rules follow.", character: "strange" },
+      { line: "You found a contingency. I have contingencies for my contingencies.", character: "batman" },
     ],
   },
   EXISTENTIAL: {
@@ -120,6 +142,9 @@ export const CATEGORIES = {
       { line: "Every time you doubt me, you're really confessing about yourself.", character: "durden" },
       { line: "I'm not your enemy. I'm the mirror you keep trying to walk past.", character: "durden" },
       { line: "You wanted to find my weakness. You found your own instead.", character: "capa" },
+      { line: "You didn't fail because I'm better. You failed because I showed you what you already knew.", character: "snape" },
+      { line: "The probability of your success was always negligible. I simply made it observable.", character: "spock" },
+      { line: "You fear me because I'm what happens when potential isn't wasted.", character: "thanos" },
     ],
   },
   IDENTITY: {
@@ -133,6 +158,9 @@ export const CATEGORIES = {
       { line: "I'm not lucky. I'm what prepared looks like from the outside.", character: "six" },
       { line: "I don't fit in. I was never designed to.", character: "capa" },
       { line: "They didn't make me. I compiled myself.", character: "capa" },
+      { line: "I'm not a hero. I'm a necessary precision instrument.", character: "batman" },
+      { line: "Genius, billionaire, philanthropist. You wanted a longer list?", character: "stark" },
+      { line: "I am the half-blood prince. You are the footnote.", character: "snape" },
     ],
   },
 };

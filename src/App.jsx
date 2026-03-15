@@ -116,17 +116,16 @@ export default function MentalKungFuApp() {
     return lines;
   }, [batches]);
 
-  // Filtered lines
+  // Filtered lines (exclude forged — they show in Trending Today)
   const filteredLines = useMemo(() => {
-    const combined = [...forgedFeedLines, ...ALL_LINES];
-    return filterLines(combined, {
+    return filterLines(ALL_LINES, {
       characters: activeCharacters,
       moods: activeMoods,
       savedOnly,
       savedSet,
       search,
     });
-  }, [activeCharacters, activeMoods, savedOnly, savedSet, search, forgedFeedLines]);
+  }, [activeCharacters, activeMoods, savedOnly, savedSet, search]);
 
   const handleHome = useCallback(() => {
     setActiveCharacters(new Set());
