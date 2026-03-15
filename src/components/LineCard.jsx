@@ -23,42 +23,50 @@ export default function LineCard({ line, category, character, copied, onCopy, on
         borderRadius: 10, position: "relative",
       }}
     >
-      {forged && (
-        <div style={{ fontSize: 8, color: "#ef4444", fontWeight: 700, marginBottom: 4, fontFamily: "'Outfit',sans-serif" }}>
-          ⚡ FORGED
-        </div>
-      )}
       <div style={{ fontSize: 13, color: "#f5f5f7", lineHeight: 1.55, fontFamily: "'Outfit',sans-serif" }}>
         "{line}"
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 8, flexWrap: "wrap" }}>
+        {forged && (
+          <span style={{
+            fontSize: 7, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
+            padding: "1px 5px", borderRadius: 4,
+            background: "rgba(239,68,68,0.1)", color: "#ef4444",
+          }}>⚡ FORGED</span>
+        )}
         <span
-          title={cat.desc}
+          className="cat-tag"
           style={{
-            fontSize: 9, fontWeight: 700, color: cat.color, fontFamily: "'Outfit',sans-serif",
-            cursor: "help",
+            fontSize: 8, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
+            padding: "1px 5px", borderRadius: 4,
+            background: `${cat.color}15`, color: cat.color,
           }}
         >
           {cat.icon} {category}
+          {cat.desc && <span className="cat-tip">{cat.desc}</span>}
         </span>
         {char && (
-          <>
-            <span style={{ fontSize: 9, color: "#333" }}>•</span>
-            <span style={{ fontSize: 9, color: "#555", fontFamily: "'Outfit',sans-serif" }}>
-              {char.icon} {char.name}
-            </span>
-          </>
+          <span style={{ fontSize: 8, color: "#555", fontFamily: "'Outfit',sans-serif" }}>
+            {char.icon} {char.name}
+          </span>
         )}
         {extra && (
-          <>
-            <span style={{ fontSize: 9, color: "#333" }}>•</span>
-            <span style={{ fontSize: 9, color: "#555", fontFamily: "'Outfit',sans-serif" }}>{extra}</span>
-          </>
+          <span style={{ fontSize: 8, color: "#444", fontFamily: "'Outfit',sans-serif" }}>← {extra.replace(/^←\s*/, "")}</span>
         )}
+        {emotions.map(e => (
+          <span
+            key={e}
+            style={{
+              fontSize: 7, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
+              color: `${EMOTION_META[e].color}99`,
+            }}
+          >
+            {EMOTION_META[e].icon} {e}
+          </span>
+        ))}
         {copied && (
           <span style={{
             fontSize: 8, color: "#22c55e", fontWeight: 700, fontFamily: "'Outfit',sans-serif",
-            marginLeft: 4,
           }}>✓ COPIED</span>
         )}
         <button
@@ -72,26 +80,6 @@ export default function LineCard({ line, category, character, copied, onCopy, on
           {saved ? "★" : "☆"}
         </button>
       </div>
-      {emotions.length > 0 && (
-        <div style={{ display: "flex", gap: 4, marginTop: 6, flexWrap: "wrap" }}>
-          {emotions.map(e => {
-            const meta = EMOTION_META[e];
-            return (
-              <span
-                key={e}
-                style={{
-                  fontSize: 8, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
-                  padding: "2px 6px", borderRadius: 8,
-                  background: `${meta.color}12`, border: `1px solid ${meta.color}30`,
-                  color: meta.color, display: "inline-flex", alignItems: "center", gap: 2,
-                }}
-              >
-                {meta.icon} {e}
-              </span>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }

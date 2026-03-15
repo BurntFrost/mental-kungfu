@@ -39,6 +39,11 @@ body { background: var(--bg-0); color: var(--text-1); }
 .shimmer-btn { background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c, #dc2626, #ef4444); background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }
 .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 200; animation: toast-in 0.3s ease-out; pointer-events: none; }
 .toast--exit { animation: toast-out 0.25s ease-in forwards; }
+
+.cat-tag { position: relative; cursor: help; }
+.cat-tag .cat-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); color: #c0c0cc; font-size: 10px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.cat-tag .cat-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #1e1e2e; }
+.cat-tag:hover .cat-tip { visibility: visible; opacity: 1; }
 `;
 
 const ALL_LINES = getAllLines();

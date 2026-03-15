@@ -40,7 +40,7 @@ STEP 3: Generate exactly ${count} one-liners that EXPLOIT these psychological fi
 - Work as standalone statements without needing to know the news context
 - Be under 20 words each
 - Each belong to a different category from: ${catList}
-- Assign each line a character energy from: wick, durden, six, specter, seven, slevin, capa
+- Assign each line a character energy from: wick, durden, six, specter, seven, slevin, capa, lecter, chigurh, joker, heisenberg, rorschach
   - wick: silent force, implied capability
   - durden: existential mirror, system destruction
   - six: ghost professionalism, zero ego
@@ -48,6 +48,11 @@ STEP 3: Generate exactly ${count} one-liners that EXPLOIT these psychological fi
   - seven: cold logic, emotional irrelevance
   - slevin: casual misdirection, hidden hand
   - capa: cosmic perspective, existential weight
+  - lecter: intellectual predator, psychological omniscience
+  - chigurh: fate incarnate, zero negotiation
+  - joker: agent of chaos, exposes systemic fragility
+  - heisenberg: quiet empire, earned dominance
+  - rorschach: unbreakable absolutism, moral extremism
 
 STEP 4: Return ONLY valid JSON with no markdown formatting, no backticks, no preamble. Just raw JSON:
 {"events":[{"headline":"short headline","source":"source name","vulnerability":"the core psychological vulnerability identified"}],"lines":[{"line":"the one-liner","category":"CATEGORY_NAME","character":"character_id","inspired_by":"which headline inspired this","target":"what psychological pressure point this exploits"}]}`

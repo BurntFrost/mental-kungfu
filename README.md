@@ -1,65 +1,38 @@
 # Mental Kung Fu
 
-**A tactical mindset engine powered by AI.** Browse 90+ curated one-liners for mental toughness, filter by character, mood, or emotion — or generate fresh ones from today's current events.
+**A tactical mindset engine powered by AI.** 90+ curated one-liners for mental toughness — filterable by character, mood, and emotion — plus an AI forge that generates new lines from live current events.
 
-**[Try it live](https://burntfrost.github.io/mental-kungfu/)**
+**[Try it live →](https://burntfrost.github.io/mental-kungfu/)**
 
 ---
 
-## What It Does
+## Overview
 
-Mental Kung Fu gives you cold, confident one-liners across 10 psychological categories. Use them as mental anchors, conversation ammo, or just a daily mindset reset.
+A unified dashboard for browsing, filtering, and generating cold, confident one-liners across 10 psychological categories.
 
-The app is a unified dashboard with:
+**Filters** — Narrow the feed by combining any of:
+- **13 Characters** — Wick, Durden, Specter, Snape, Stark, Thanos, Batman, and more (tap to filter, long-press for profile)
+- **5 Moods** — Cold, Calculated, Existential, Dismissive, Stoic
+- **6 Emotions** — Angry, Insecure, Disrespected, Anxious, Challenged, Underestimated
 
-- **Character Grid** — 13 character archetypes you can filter by (tap to filter, long-press for profile)
-- **Mood Chips** — tone filters: Cold, Calculated, Existential, Dismissive, Stoic
-- **Emotion Chips** — "I'm feeling..." filters: Angry, Insecure, Disrespected, Anxious, Challenged, Underestimated
-- **Trending Today** — collapsible section showing the latest AI-forged lines from current events
-- **Line Feed** — all 90+ lines with search, filterable by any combination of character, mood, and emotion
-- **Saved** — star any line to save it; filter to view your collection
+Emotion filters surface lines that counter or channel that state (e.g. "Angry" → Stoic + Indifference + Control lines). Mood and emotion filters combine freely.
 
-### The 13 Characters
+**Line Cards** — Each line shows its category (with hover tooltip), character, and emotion tags in a single compact row. Tap to copy, star to save.
 
-John Wick, Tyler Durden, Sierra Six, Harvey Specter, Seven of Nine, Slevin, Capa, Snape, Spock, Tony Stark, Thanos, Batman, Dr. Strange
-
-Each character brings a distinct energy — from Wick's silent force to Snape's cutting precision to Strange's dimensional superiority.
-
-### The 10 Categories
-
-Reframe, Scale, Tempo, Indifference, Dismissal, Stoic, Inevitability, Control, Existential, Identity
-
-Each targets a different psychological vector — from flipping someone's frame to erasing them from the equation entirely.
-
-### Emotion Filtering
-
-Emotion chips let you filter lines by how you're feeling. Each emotion maps to categories that counter or channel that state:
-
-- **Angry** → Stoic, Indifference, Control
-- **Insecure** → Identity, Scale
-- **Disrespected** → Dismissal, Reframe
-- **Anxious** → Control, Inevitability, Stoic
-- **Challenged** → Tempo, Existential, Reframe
-- **Underestimated** → Scale, Inevitability, Identity
-
-Mood and emotion filters combine (union) so you can mix both freely.
+**Trending Today** — Collapsible section showing the latest AI-forged lines with source attribution.
 
 ---
 
 ## Forge Engine
 
-The Forge Engine connects to the Anthropic API to generate fresh lines from real current events:
+Generates fresh lines from real current events via the Anthropic API:
 
 1. Searches today's headlines via web search
-2. Performs psychological deconstruction analysis on trending stories
-3. Generates 2 tactical one-liners mapped to different categories
-4. Stores results with source attribution in the Trending Today section
+2. Performs psychological deconstruction on trending stories
+3. Generates 2 tactical one-liners with category + character assignment
+4. Results appear in Trending Today with source attribution
 
-**Auto-forge** mode regenerates every 90 seconds for a continuous feed.
-
-### Bring Your Own Key
-
-The Forge requires an [Anthropic API key](https://console.anthropic.com/settings/keys). Enter it in the Settings panel (gear icon) — it's stored in your browser's localStorage and only sent to Anthropic's API. Nothing is stored server-side.
+**Auto-forge** mode regenerates every 90 seconds. Requires an [Anthropic API key](https://console.anthropic.com/settings/keys) — enter it in Settings (⚙️). Stored in localStorage only; nothing server-side.
 
 ---
 
@@ -69,50 +42,41 @@ The Forge requires an [Anthropic API key](https://console.anthropic.com/settings
 git clone https://github.com/BurntFrost/mental-kungfu.git
 cd mental-kungfu
 npm install
-npm run dev
+npm run dev        # http://localhost:3000
 ```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-### Build for Production
 
 ```bash
-npm run build
-npm run preview
+npm run build      # Production build → dist/
+npm run preview    # Preview production build
 ```
 
-Deployment to GitHub Pages runs automatically on push to `main` via GitHub Actions.
+Auto-deploys to GitHub Pages on push to `main`.
 
 ---
 
 ## Tech Stack
 
-- **React 18** — modular component architecture with hooks
-- **Vite 5** — build tooling and dev server (port 3000)
-- **Anthropic API** (Claude Sonnet + web search) — powers the Forge Engine
-- **localStorage** — persists saved lines, forged batches, and API key
-- **GitHub Pages** — auto-deployed via GitHub Actions (v5)
-
-### Project Structure
+- **React 18** + **Vite 5** — modular components, hooks, dev server on port 3000
+- **Anthropic API** (Claude Sonnet + web search) — Forge Engine
+- **localStorage** — saved lines, forged batches, API key
+- **GitHub Pages** — auto-deployed via GitHub Actions
 
 ```
 src/
-├── App.jsx                  # Lightweight orchestrator
-├── components/              # UI components (LineCard, CharacterGrid, ForgePanel, etc.)
-├── data/                    # Categories, characters, moods, emotions
-├── hooks/                   # useStorage, useForge
-└── lib/                     # Line filtering, forge API
+├── App.jsx            # Orchestrator + global styles
+├── components/        # LineCard, CharacterGrid, ForgePanel, EmotionChips, etc.
+├── data/              # Categories, characters, moods, emotions
+├── hooks/             # useStorage, useForge
+└── lib/               # Line filtering, forge API
 ```
 
 ---
 
 ## Docs
 
-Detailed design documentation lives in `/docs/`:
-
-- `DESIGN.md` — design philosophy and psychological framework
-- `CATEGORIES.md` — full category taxonomy with archetypes
-- `FORGE-ENGINE.md` — Forge engine technical documentation
+- [`docs/DESIGN.md`](docs/DESIGN.md) — Psychological framework and anti-patterns
+- [`docs/CATEGORIES.md`](docs/CATEGORIES.md) — Full category taxonomy with archetypes
+- [`docs/FORGE-ENGINE.md`](docs/FORGE-ENGINE.md) — Forge engine technical spec
 
 ---
 
