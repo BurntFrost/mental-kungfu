@@ -389,7 +389,7 @@ function saveApiKey(key) {
   try { localStorage.setItem("anthropic-api-key", key); } catch {}
 }
 
-async function forgeNewLines(apiKey) {
+async function forgeNewLines(apiKey, count = 5) {
   if (!apiKey) {
     throw new Error("API key required. Enter your Anthropic API key in the settings below.");
   }
@@ -413,7 +413,7 @@ async function forgeNewLines(apiKey) {
 
 STEP 1: Search for today's most interesting current events, news headlines, trending topics, or cultural moments.
 
-STEP 2: Generate exactly 5 aggressive one-liner "mental kung fu" lines INSPIRED BY specific events you found. The lines should:
+STEP 2: Generate exactly ${count} aggressive one-liner "mental kung fu" lines INSPIRED BY specific events you found. The lines should:
 - Be cold, surgical, confident — never loud or angry
 - Weaponize the metaphor from the current event — don't just comment on the news
 - Work as standalone statements without needing to know the news context
@@ -662,7 +662,7 @@ export default function MentalKungFuApp() {
 
   // Forge engine
   const forgeTimerRef = useRef(null);
-  const runForge = useCallback(async () => {
+  const runForge = useCallback(async (isAuto = false) => {
     if (forging) return;
     setForging(true);
     setForgeError(null);
@@ -678,7 +678,7 @@ export default function MentalKungFuApp() {
 
     try {
       setStage("searching");
-      const result = await forgeNewLines(apiKey);
+      const result = await forgeNewLines(apiKey, 2);
       setStage("processing");
       const batch = {
         id: Date.now(),
@@ -724,8 +724,8 @@ export default function MentalKungFuApp() {
   // Auto-forge interval
   useEffect(() => {
     if (autoForge) {
-      runForge();
-      autoRef.current = setInterval(runForge, 90000);
+      runForge(true);
+      autoRef.current = setInterval(() => runForge(true), 90000);
       return () => clearInterval(autoRef.current);
     } else {
       clearInterval(autoRef.current);
