@@ -138,6 +138,14 @@ body { background: var(--bg-0); color: var(--text-1); }
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+@keyframes stage-enter {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(20px) scale(0.95); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -596,6 +604,7 @@ export default function MentalKungFuApp() {
   const [storageReady, setStorageReady] = useState(false);
   const [apiKey, setApiKey] = useState("");
   const [showKeyInput, setShowKeyInput] = useState(false);
+  const [forgeStatus, setForgeStatus] = useState(null); // { stage, elapsed }
   const autoRef = useRef(null);
 
   // Load persisted data synchronously from localStorage
@@ -652,12 +661,25 @@ export default function MentalKungFuApp() {
   }, []);
 
   // Forge engine
+  const forgeTimerRef = useRef(null);
   const runForge = useCallback(async () => {
     if (forging) return;
     setForging(true);
     setForgeError(null);
+    const startTime = Date.now();
+    setForgeStatus({ stage: "connecting", elapsed: 0 });
+
+    // Update elapsed time every 100ms
+    forgeTimerRef.current = setInterval(() => {
+      setForgeStatus(prev => prev ? { ...prev, elapsed: Date.now() - startTime } : null);
+    }, 100);
+
+    const setStage = (stage) => setForgeStatus(prev => prev ? { ...prev, stage } : null);
+
     try {
+      setStage("searching");
       const result = await forgeNewLines(apiKey);
+      setStage("processing");
       const batch = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
@@ -668,16 +690,19 @@ export default function MentalKungFuApp() {
           category: (l.category || "REFRAME").toUpperCase(),
         })),
       };
+      setStage("complete");
       setForgedBatches(prev => {
         const next = [batch, ...prev].slice(0, 20);
         saveForged(next);
         return next;
       });
       setForgeCount(c => c + 1);
-      showToast(`Forged ${batch.lines.length} new lines`);
+      showToast(`Forged ${batch.lines.length} new lines from ${batch.events.length} events`);
     } catch (err) {
       setForgeError(err.message || "Forge failed");
     }
+    clearInterval(forgeTimerRef.current);
+    setForgeStatus(null);
     setForging(false);
   }, [forging, showToast, apiKey]);
 
@@ -748,7 +773,7 @@ export default function MentalKungFuApp() {
               fontSize: 20, fontWeight: 900, color: "#fff",
               boxShadow: "0 0 30px rgba(239,68,68,0.25), inset 0 1px 0 rgba(255,255,255,0.15)",
               fontFamily: "'Outfit',sans-serif",
-            }}>功</div>
+            }}>⚡</div>
             <div>
               <div style={{
                 fontFamily: "'Outfit',sans-serif", fontSize: 22, fontWeight: 800,
@@ -1137,6 +1162,92 @@ export default function MentalKungFuApp() {
               }}>⚠ {forgeError}</div>
             )}
 
+            {/* Forge Status Panel */}
+            {forgeStatus && (() => {
+              const stages = [
+                { key: "connecting", icon: "◉", label: "Connecting to Anthropic API" },
+                { key: "searching", icon: "◎", label: "Searching current events via web_search" },
+                { key: "processing", icon: "◈", label: "Generating tactical lines" },
+                { key: "complete", icon: "✓", label: "Forge complete" },
+              ];
+              const currentIdx = stages.findIndex(s => s.key === forgeStatus.stage);
+              const elapsed = (forgeStatus.elapsed / 1000).toFixed(1);
+              return (
+                <div style={{
+                  marginBottom: 16, padding: "16px",
+                  background: "linear-gradient(135deg, rgba(239,68,68,0.04) 0%, rgba(139,92,246,0.03) 100%)",
+                  border: "1px solid rgba(239,68,68,0.12)",
+                  borderRadius: 10, position: "relative", overflow: "hidden",
+                }}>
+                  {/* Progress bar */}
+                  <div style={{
+                    position: "absolute", top: 0, left: 0, height: 2,
+                    background: "linear-gradient(90deg, #ef4444, #f97316)",
+                    width: `${Math.min(((currentIdx + 1) / stages.length) * 100, 100)}%`,
+                    transition: "width 0.5s ease",
+                  }} />
+
+                  <div style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    marginBottom: 14,
+                  }}>
+                    <div style={{
+                      fontFamily: "'Outfit',sans-serif", fontSize: 11, fontWeight: 700,
+                      color: "#ef4444", display: "flex", alignItems: "center", gap: 8,
+                    }}>
+                      <NeuralActivity active={true} />
+                      <span>FORGE IN PROGRESS</span>
+                    </div>
+                    <div style={{
+                      fontFamily: "'IBM Plex Mono',monospace", fontSize: 11,
+                      color: "#6b7280", fontVariantNumeric: "tabular-nums",
+                    }}>
+                      {elapsed}s
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {stages.map((s, i) => {
+                      const done = i < currentIdx;
+                      const active = i === currentIdx;
+                      const pending = i > currentIdx;
+                      return (
+                        <div key={s.key} style={{
+                          display: "flex", alignItems: "center", gap: 10,
+                          opacity: pending ? 0.25 : 1,
+                          animation: (done || active) ? "stage-enter 0.3s ease both" : "none",
+                          animationDelay: `${i * 0.1}s`,
+                        }}>
+                          <div style={{
+                            width: 18, height: 18, borderRadius: "50%",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 9, fontWeight: 700,
+                            background: done ? "rgba(34,197,94,0.15)" : active ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.03)",
+                            color: done ? "#22c55e" : active ? "#ef4444" : "#3a3a4a",
+                            border: `1px solid ${done ? "rgba(34,197,94,0.2)" : active ? "rgba(239,68,68,0.2)" : "rgba(255,255,255,0.05)"}`,
+                            transition: "all 0.3s ease",
+                          }}>
+                            {done ? "✓" : s.icon}
+                          </div>
+                          <div style={{
+                            fontFamily: "'IBM Plex Mono',monospace", fontSize: 11,
+                            color: done ? "#22c55e" : active ? "#f5f5f7" : "#3a3a4a",
+                            fontWeight: active ? 600 : 400,
+                            transition: "color 0.3s ease",
+                          }}>
+                            {s.label}
+                            {active && <span style={{
+                              display: "inline-block", marginLeft: 4, animation: "breathe 1.5s ease-in-out infinite",
+                            }}>...</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
             {forgedBatches.length === 0 && !forging && (
               <div style={{
                 textAlign: "center", padding: "60px 20px",
@@ -1147,22 +1258,6 @@ export default function MentalKungFuApp() {
                 <div style={{ fontSize: 12, color: "#4b5563", marginTop: 6 }}>
                   Hit FORGE NOW to scan current events and generate tactical lines
                 </div>
-              </div>
-            )}
-
-            {forging && forgedBatches.length === 0 && (
-              <div style={{ textAlign: "center", padding: "50px 20px" }}>
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <NeuralActivity active={true} />
-                </div>
-                <div style={{
-                  fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#6b7280",
-                  marginTop: 16,
-                }}>Scanning current events...</div>
-                <div style={{
-                  fontFamily: "'IBM Plex Mono',monospace", fontSize: 10, color: "#3a3a4a",
-                  marginTop: 8,
-                }}>web_search → analyze → weaponize → deliver</div>
               </div>
             )}
 
