@@ -1,0 +1,31 @@
+{
+  "name": "mental-kungfu",
+  "version": "2.0.0",
+  "description": "A tactical mindset engine that weaponizes current events into cold, surgical one-liners. AI-powered generative reference tool with 10 psychological categories.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "vite": "^5.4.0"
+  },
+  "keywords": [
+    "mindset",
+    "tactical",
+    "ai-powered",
+    "react",
+    "pwa",
+    "anthropic",
+    "mental-toughness"
+  ],
+  "author": "Steve Carr",
+  "license": "MIT"
+}
