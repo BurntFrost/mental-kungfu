@@ -25,7 +25,7 @@ export default function ForgePanel({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          width: "100%", maxWidth: 480,
+          width: "100%", maxWidth: 720,
           background: "#0e0e14", borderRadius: "16px 16px 0 0",
           padding: "20px 16px 32px", animation: "fade-in 0.2s ease-out",
         }}

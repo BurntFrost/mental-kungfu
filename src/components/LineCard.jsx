@@ -1,9 +1,11 @@
 import { CATEGORY_META } from "../data/moods.js";
 import { CHARACTERS } from "../data/characters.js";
+import { getEmotionsForCategory, EMOTION_META } from "../data/emotions.js";
 
 export default function LineCard({ line, category, character, copied, onCopy, onSave, saved, extra, forged }) {
   const cat = CATEGORY_META[category] || { icon: "?", color: "#666" };
   const char = CHARACTERS[character];
+  const emotions = getEmotionsForCategory(category);
 
   return (
     <div
@@ -30,9 +32,13 @@ export default function LineCard({ line, category, character, copied, onCopy, on
         "{line}"
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-        <span style={{
-          fontSize: 9, fontWeight: 700, color: cat.color, fontFamily: "'Outfit',sans-serif",
-        }}>
+        <span
+          title={cat.desc}
+          style={{
+            fontSize: 9, fontWeight: 700, color: cat.color, fontFamily: "'Outfit',sans-serif",
+            cursor: "help",
+          }}
+        >
           {cat.icon} {category}
         </span>
         {char && (
@@ -66,6 +72,26 @@ export default function LineCard({ line, category, character, copied, onCopy, on
           {saved ? "★" : "☆"}
         </button>
       </div>
+      {emotions.length > 0 && (
+        <div style={{ display: "flex", gap: 4, marginTop: 6, flexWrap: "wrap" }}>
+          {emotions.map(e => {
+            const meta = EMOTION_META[e];
+            return (
+              <span
+                key={e}
+                style={{
+                  fontSize: 8, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
+                  padding: "2px 6px", borderRadius: 8,
+                  background: `${meta.color}12`, border: `1px solid ${meta.color}30`,
+                  color: meta.color, display: "inline-flex", alignItems: "center", gap: 2,
+                }}
+              >
+                {meta.icon} {e}
+              </span>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

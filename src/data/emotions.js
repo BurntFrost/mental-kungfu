@@ -14,11 +14,20 @@ export const EMOTION_MAP = {
 
 export const EMOTION_NAMES = Object.keys(EMOTION_MAP);
 
+/** Reverse lookup: category → list of emotions that include it */
+export function getEmotionsForCategory(category) {
+  const result = [];
+  for (const [emotion, cats] of Object.entries(EMOTION_MAP)) {
+    if (cats.includes(category)) result.push(emotion);
+  }
+  return result;
+}
+
 export const EMOTION_META = {
-  Angry:          { icon: "🔥", color: "#ef4444" },
-  Insecure:       { icon: "🪞", color: "#a855f7" },
-  Disrespected:   { icon: "⚡", color: "#f59e0b" },
-  Anxious:        { icon: "🌀", color: "#06b6d4" },
+  Angry:          { icon: "😠", color: "#ef4444" },
+  Insecure:       { icon: "😟", color: "#a855f7" },
+  Disrespected:   { icon: "😤", color: "#f59e0b" },
+  Anxious:        { icon: "😰", color: "#06b6d4" },
   Challenged:     { icon: "⚔️", color: "#ec4899" },
-  Underestimated: { icon: "🧊", color: "#3b82f6" },
+  Underestimated: { icon: "😏", color: "#3b82f6" },
 };

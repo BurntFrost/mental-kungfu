@@ -22,12 +22,12 @@ export function useForge({ apiKey, onBatch, onToast }) {
       setForgeStatus(prev => prev ? { ...prev, elapsed: Date.now() - startTime } : null);
     }, 100);
 
-    const setStage = (stage) => setForgeStatus(prev => prev ? { ...prev, stage } : null);
+    const onProgress = (stage) => {
+      setForgeStatus(prev => prev ? { ...prev, stage } : { stage, elapsed: Date.now() - startTime });
+    };
 
     try {
-      setStage("searching");
-      const result = await forgeNewLines(apiKey, 2);
-      setStage("processing");
+      const result = await forgeNewLines(apiKey, 2, onProgress);
       const batch = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
@@ -39,9 +39,11 @@ export function useForge({ apiKey, onBatch, onToast }) {
           character: l.character || "wick",
         })),
       };
-      setStage("complete");
+      onProgress("complete");
       onBatch(batch);
       onToast(`Forged ${batch.lines.length} new lines from ${batch.events.length} events`);
+      // Hold "complete" stage so the user sees it
+      await new Promise(r => setTimeout(r, 1500));
     } catch (err) {
       setForgeError(err.message || "Forge failed");
     }

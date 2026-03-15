@@ -1,11 +1,13 @@
 import { CATEGORY_KEYS } from "../data/categories.js";
 
-export async function forgeNewLines(apiKey, count = 2) {
+export async function forgeNewLines(apiKey, count = 2, onProgress) {
   if (!apiKey) {
     throw new Error("API key required. Add your Anthropic API key in Settings.");
   }
 
+  onProgress?.("connecting");
   const catList = CATEGORY_KEYS.join(", ");
+  onProgress?.("searching");
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -58,8 +60,8 @@ STEP 4: Return ONLY valid JSON with no markdown formatting, no backticks, no pre
     throw new Error(`API error ${response.status}: ${errBody.slice(0, 100)}`);
   }
 
+  onProgress?.("processing");
   const data = await response.json();
-
   const textBlocks = (data.content || [])
     .filter(item => item.type === "text")
     .map(item => item.text)
