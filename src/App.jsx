@@ -9,6 +9,7 @@ import LineFeed from "./components/LineFeed.jsx";
 import CharacterProfile from "./components/CharacterProfile.jsx";
 import ForgePanel from "./components/ForgePanel.jsx";
 import SettingsPanel from "./components/SettingsPanel.jsx";
+import EmotionChips from "./components/EmotionChips.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import Toast from "./components/Toast.jsx";
 
@@ -46,6 +47,7 @@ export default function MentalKungFuApp() {
   // Filters
   const [activeCharacters, setActiveCharacters] = useState(new Set());
   const [activeMoods, setActiveMoods] = useState(new Set());
+  const [activeEmotions, setActiveEmotions] = useState(new Set());
   const [savedOnly, setSavedOnly] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -101,6 +103,14 @@ export default function MentalKungFuApp() {
     });
   }, []);
 
+  const toggleEmotion = useCallback((emotion) => {
+    setActiveEmotions(prev => {
+      const next = new Set(prev);
+      next.has(emotion) ? next.delete(emotion) : next.add(emotion);
+      return next;
+    });
+  }, []);
+
   // Build forged lines for the unified feed
   const forgedFeedLines = useMemo(() => {
     const lines = [];
@@ -121,15 +131,17 @@ export default function MentalKungFuApp() {
     return filterLines(ALL_LINES, {
       characters: activeCharacters,
       moods: activeMoods,
+      emotions: activeEmotions,
       savedOnly,
       savedSet,
       search,
     });
-  }, [activeCharacters, activeMoods, savedOnly, savedSet, search]);
+  }, [activeCharacters, activeMoods, activeEmotions, savedOnly, savedSet, search]);
 
   const handleHome = useCallback(() => {
     setActiveCharacters(new Set());
     setActiveMoods(new Set());
+    setActiveEmotions(new Set());
     setSavedOnly(false);
     setSearch("");
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
@@ -139,7 +151,7 @@ export default function MentalKungFuApp() {
     <>
       <style>{CSS}</style>
       <div ref={scrollRef} style={{
-        maxWidth: 480, margin: "0 auto", minHeight: "100vh",
+        maxWidth: 720, margin: "0 auto", minHeight: "100vh",
         paddingBottom: 70, fontFamily: "'Outfit',sans-serif",
       }}>
         {/* Header */}
@@ -171,6 +183,11 @@ export default function MentalKungFuApp() {
           onToggle={toggleMood}
           savedActive={savedOnly}
           onToggleSaved={() => setSavedOnly(v => !v)}
+        />
+
+        <EmotionChips
+          activeEmotions={activeEmotions}
+          onToggle={toggleEmotion}
         />
 
         <TrendingToday

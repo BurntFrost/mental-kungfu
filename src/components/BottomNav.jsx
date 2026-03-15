@@ -4,7 +4,7 @@ export default function BottomNav({ onHome, onForge, onSettings }) {
       position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50,
       background: "rgba(8,8,12,0.95)", borderTop: "1px solid rgba(255,255,255,0.06)",
       backdropFilter: "blur(10px)", display: "flex", padding: "10px 0 14px",
-      maxWidth: 480, margin: "0 auto",
+      maxWidth: 720, margin: "0 auto",
     }}>
       <button onClick={onHome} style={{
         flex: 1, background: "none", border: "none", cursor: "pointer", textAlign: "center",

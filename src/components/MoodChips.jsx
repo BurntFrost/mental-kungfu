@@ -3,7 +3,7 @@ import { MOOD_NAMES } from "../data/moods.js";
 export default function MoodChips({ activeMoods, onToggle, savedActive, onToggleSaved }) {
   return (
     <div style={{
-      display: "flex", gap: 6, flexWrap: "wrap", padding: "10px 16px 0",
+      display: "flex", gap: 6, flexWrap: "wrap", padding: "10px 16px 0", justifyContent: "center",
     }}>
       {MOOD_NAMES.map(mood => {
         const active = activeMoods.has(mood);

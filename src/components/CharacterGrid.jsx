@@ -35,7 +35,7 @@ export default function CharacterGrid({ activeCharacters, onToggle, onProfile })
   return (
     <div style={{
       display: "flex", gap: 8, overflowX: "auto", padding: "14px 16px 0",
-      WebkitOverflowScrolling: "touch", scrollbarWidth: "none",
+      WebkitOverflowScrolling: "touch", scrollbarWidth: "none", justifyContent: "center",
     }}>
       {CHARACTER_IDS.map(id => {
         const c = CHARACTERS[id];
@@ -47,7 +47,7 @@ export default function CharacterGrid({ activeCharacters, onToggle, onProfile })
             onPointerUp={() => handlePointerUp(id)}
             onPointerLeave={handlePointerLeave}
             style={{
-              minWidth: 72, padding: "10px 6px", textAlign: "center",
+              flex: "1 1 0", minWidth: 72, maxWidth: 120, padding: "10px 6px", textAlign: "center",
               borderRadius: 10, cursor: "pointer", userSelect: "none",
               background: active
                 ? "linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05))"

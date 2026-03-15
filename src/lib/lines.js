@@ -1,5 +1,6 @@
 import { CATEGORIES, CATEGORY_KEYS } from "../data/categories.js";
 import { MOOD_MAP } from "../data/moods.js";
+import { EMOTION_MAP } from "../data/emotions.js";
 
 /**
  * Build flat array of all static lines from categories.
@@ -23,20 +24,30 @@ export function getAllLines() {
 /**
  * Filter lines by active characters, moods, saved state, and search text.
  */
-export function filterLines(lines, { characters, moods, savedOnly, savedSet, search }) {
+export function filterLines(lines, { characters, moods, emotions, savedOnly, savedSet, search }) {
   let result = lines;
 
   if (characters.size > 0) {
     result = result.filter(l => characters.has(l.character));
   }
 
+  // Combine mood + emotion category filters (union of both)
+  const allowedCats = new Set();
   if (moods.size > 0) {
-    const allowedCats = new Set();
     for (const mood of moods) {
       for (const cat of (MOOD_MAP[mood] || [])) {
         allowedCats.add(cat);
       }
     }
+  }
+  if (emotions.size > 0) {
+    for (const emotion of emotions) {
+      for (const cat of (EMOTION_MAP[emotion] || [])) {
+        allowedCats.add(cat);
+      }
+    }
+  }
+  if (allowedCats.size > 0) {
     result = result.filter(l => allowedCats.has(l.category));
   }
 
