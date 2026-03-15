@@ -3,14 +3,13 @@ import { useSavedLines, useForgedBatches, useApiKey } from "./hooks/useStorage.j
 import { useForge } from "./hooks/useForge.js";
 import { getAllLines, filterLines } from "./lib/lines.js";
 import CharacterGrid from "./components/CharacterGrid.jsx";
-import MoodChips from "./components/MoodChips.jsx";
 import TrendingToday from "./components/TrendingToday.jsx";
 import LineFeed from "./components/LineFeed.jsx";
 import CharacterProfile from "./components/CharacterProfile.jsx";
 import ForgePanel from "./components/ForgePanel.jsx";
 import SettingsPanel from "./components/SettingsPanel.jsx";
 import EmotionChips from "./components/EmotionChips.jsx";
-import CategoryChips from "./components/CategoryChips.jsx";
+import FilterChips from "./components/FilterChips.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import Toast from "./components/Toast.jsx";
 
@@ -198,21 +197,18 @@ export default function MentalKungFuApp() {
           onProfile={setProfileChar}
         />
 
-        <MoodChips
-          activeMoods={activeMoods}
-          onToggle={toggleMood}
-          savedActive={savedOnly}
-          onToggleSaved={() => setSavedOnly(v => !v)}
-        />
-
         <EmotionChips
           activeEmotions={activeEmotions}
           onToggle={toggleEmotion}
         />
 
-        <CategoryChips
+        <FilterChips
+          activeMoods={activeMoods}
+          onToggleMood={toggleMood}
           activeCategories={activeCategories}
-          onToggle={toggleCategory}
+          onToggleCategory={toggleCategory}
+          savedActive={savedOnly}
+          onToggleSaved={() => setSavedOnly(v => !v)}
         />
 
         <TrendingToday

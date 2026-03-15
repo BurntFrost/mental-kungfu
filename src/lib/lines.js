@@ -1,4 +1,5 @@
 import { CATEGORIES, CATEGORY_KEYS } from "../data/categories.js";
+import { CATEGORY_META } from "../data/moods.js";
 import { MOOD_MAP } from "../data/moods.js";
 import { EMOTION_MAP } from "../data/emotions.js";
 
@@ -66,4 +67,24 @@ export function filterLines(lines, { characters, moods, emotions, categories, sa
   }
 
   return result;
+}
+
+/**
+ * Group an array of lines by their category key.
+ * Returns ordered array of { key, meta, lines[] } following CATEGORY_KEYS order.
+ */
+export function groupLinesByCategory(lines) {
+  const buckets = new Map();
+  for (const line of lines) {
+    if (!buckets.has(line.category)) buckets.set(line.category, []);
+    buckets.get(line.category).push(line);
+  }
+  // Return in canonical category order, skipping empty groups
+  return CATEGORY_KEYS
+    .filter(k => buckets.has(k))
+    .map(k => ({
+      key: k,
+      meta: CATEGORY_META[k] || { icon: "?", color: "#666", desc: "" },
+      lines: buckets.get(k),
+    }));
 }
