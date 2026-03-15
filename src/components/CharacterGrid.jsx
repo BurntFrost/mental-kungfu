@@ -33,9 +33,8 @@ export default function CharacterGrid({ activeCharacters, onToggle, onProfile })
   }, []);
 
   return (
-    <div style={{
-      display: "flex", gap: 8, overflowX: "auto", padding: "14px 16px 0",
-      WebkitOverflowScrolling: "touch", scrollbarWidth: "none", justifyContent: "center",
+    <div className="char-scroll" style={{
+      display: "flex", gap: 8, padding: "14px 16px 6px",
     }}>
       {CHARACTER_IDS.map(id => {
         const c = CHARACTERS[id];
@@ -47,7 +46,7 @@ export default function CharacterGrid({ activeCharacters, onToggle, onProfile })
             onPointerUp={() => handlePointerUp(id)}
             onPointerLeave={handlePointerLeave}
             style={{
-              flex: "1 1 0", minWidth: 72, maxWidth: 120, padding: "10px 6px", textAlign: "center",
+              flex: "0 0 auto", width: 80, padding: "10px 6px", textAlign: "center",
               borderRadius: 10, cursor: "pointer", userSelect: "none",
               background: active
                 ? "linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05))"
@@ -60,12 +59,14 @@ export default function CharacterGrid({ activeCharacters, onToggle, onProfile })
             <div style={{
               fontSize: 8, fontWeight: 800, color: "#f5f5f7",
               letterSpacing: 0.3, fontFamily: "'Outfit',sans-serif",
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
             }}>
               {c.name.split(" ").pop().toUpperCase()}
             </div>
             <div style={{
               fontSize: 7, color: active ? "#ef4444" : "#666",
               marginTop: 1, fontFamily: "'Outfit',sans-serif",
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
             }}>
               {c.energy}
             </div>

@@ -10,6 +10,7 @@ import CharacterProfile from "./components/CharacterProfile.jsx";
 import ForgePanel from "./components/ForgePanel.jsx";
 import SettingsPanel from "./components/SettingsPanel.jsx";
 import EmotionChips from "./components/EmotionChips.jsx";
+import CategoryChips from "./components/CategoryChips.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import Toast from "./components/Toast.jsx";
 
@@ -44,6 +45,9 @@ body { background: var(--bg-0); color: var(--text-1); }
 .cat-tag .cat-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); color: #c0c0cc; font-size: 10px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 .cat-tag .cat-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #1e1e2e; }
 .cat-tag:hover .cat-tip { visibility: visible; opacity: 1; }
+
+.char-scroll { overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
+.char-scroll::-webkit-scrollbar { display: none; }
 `;
 
 const ALL_LINES = getAllLines();
@@ -53,6 +57,7 @@ export default function MentalKungFuApp() {
   const [activeCharacters, setActiveCharacters] = useState(new Set());
   const [activeMoods, setActiveMoods] = useState(new Set());
   const [activeEmotions, setActiveEmotions] = useState(new Set());
+  const [activeCategories, setActiveCategories] = useState(new Set());
   const [savedOnly, setSavedOnly] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -116,6 +121,14 @@ export default function MentalKungFuApp() {
     });
   }, []);
 
+  const toggleCategory = useCallback((cat) => {
+    setActiveCategories(prev => {
+      const next = new Set(prev);
+      next.has(cat) ? next.delete(cat) : next.add(cat);
+      return next;
+    });
+  }, []);
+
   // Build forged lines for the unified feed
   const forgedFeedLines = useMemo(() => {
     const lines = [];
@@ -137,16 +150,18 @@ export default function MentalKungFuApp() {
       characters: activeCharacters,
       moods: activeMoods,
       emotions: activeEmotions,
+      categories: activeCategories,
       savedOnly,
       savedSet,
       search,
     });
-  }, [activeCharacters, activeMoods, activeEmotions, savedOnly, savedSet, search]);
+  }, [activeCharacters, activeMoods, activeEmotions, activeCategories, savedOnly, savedSet, search]);
 
   const handleHome = useCallback(() => {
     setActiveCharacters(new Set());
     setActiveMoods(new Set());
     setActiveEmotions(new Set());
+    setActiveCategories(new Set());
     setSavedOnly(false);
     setSearch("");
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
@@ -193,6 +208,11 @@ export default function MentalKungFuApp() {
         <EmotionChips
           activeEmotions={activeEmotions}
           onToggle={toggleEmotion}
+        />
+
+        <CategoryChips
+          activeCategories={activeCategories}
+          onToggle={toggleCategory}
         />
 
         <TrendingToday

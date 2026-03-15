@@ -24,14 +24,14 @@ export function getAllLines() {
 /**
  * Filter lines by active characters, moods, saved state, and search text.
  */
-export function filterLines(lines, { characters, moods, emotions, savedOnly, savedSet, search }) {
+export function filterLines(lines, { characters, moods, emotions, categories, savedOnly, savedSet, search }) {
   let result = lines;
 
   if (characters.size > 0) {
     result = result.filter(l => characters.has(l.character));
   }
 
-  // Combine mood + emotion category filters (union of both)
+  // Combine mood + emotion + direct category filters (union of all)
   const allowedCats = new Set();
   if (moods.size > 0) {
     for (const mood of moods) {
@@ -45,6 +45,11 @@ export function filterLines(lines, { characters, moods, emotions, savedOnly, sav
       for (const cat of (EMOTION_MAP[emotion] || [])) {
         allowedCats.add(cat);
       }
+    }
+  }
+  if (categories.size > 0) {
+    for (const cat of categories) {
+      allowedCats.add(cat);
     }
   }
   if (allowedCats.size > 0) {
