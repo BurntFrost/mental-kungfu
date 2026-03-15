@@ -23,22 +23,22 @@ export default function LineCard({ line, category, character, copied, onCopy, on
         borderRadius: 10, position: "relative",
       }}
     >
-      <div style={{ fontSize: 13, color: "#f5f5f7", lineHeight: 1.55, fontFamily: "'Outfit',sans-serif" }}>
+      <div style={{ fontSize: 15, color: "#f5f5f7", lineHeight: 1.55, fontFamily: "'Outfit',sans-serif" }}>
         "{line}"
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 8, flexWrap: "wrap" }}>
         {forged && (
           <span style={{
-            fontSize: 7, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
-            padding: "1px 5px", borderRadius: 4,
+            fontSize: 9, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
+            padding: "2px 6px", borderRadius: 4,
             background: "rgba(239,68,68,0.1)", color: "#ef4444",
           }}>⚡ FORGED</span>
         )}
         <span
           className="cat-tag"
           style={{
-            fontSize: 8, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
-            padding: "1px 5px", borderRadius: 4,
+            fontSize: 10, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
+            padding: "2px 6px", borderRadius: 4,
             background: `${cat.color}15`, color: cat.color,
           }}
         >
@@ -46,19 +46,19 @@ export default function LineCard({ line, category, character, copied, onCopy, on
           {cat.desc && <span className="cat-tip">{cat.desc}</span>}
         </span>
         {char && (
-          <span style={{ fontSize: 8, color: "#555", fontFamily: "'Outfit',sans-serif" }}>
+          <span style={{ fontSize: 10, color: "#555", fontFamily: "'Outfit',sans-serif" }}>
             {char.icon} {char.name}
           </span>
         )}
         {extra && (
-          <span style={{ fontSize: 8, color: "#444", fontFamily: "'Outfit',sans-serif" }}>← {extra.replace(/^←\s*/, "")}</span>
+          <span style={{ fontSize: 10, color: "#444", fontFamily: "'Outfit',sans-serif" }}>← {extra.replace(/^←\s*/, "")}</span>
         )}
         {emotions.map(e => (
           <span
             key={e}
             className="cat-tag"
             style={{
-              fontSize: 7, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
+              fontSize: 9, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
               color: `${EMOTION_META[e].color}99`,
             }}
           >
@@ -68,7 +68,7 @@ export default function LineCard({ line, category, character, copied, onCopy, on
         ))}
         {copied && (
           <span style={{
-            fontSize: 8, color: "#22c55e", fontWeight: 700, fontFamily: "'Outfit',sans-serif",
+            fontSize: 10, color: "#22c55e", fontWeight: 700, fontFamily: "'Outfit',sans-serif",
           }}>✓ COPIED</span>
         )}
         <button

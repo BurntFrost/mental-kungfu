@@ -2,14 +2,13 @@ import { useState, useCallback, useMemo, useRef } from "react";
 import { useSavedLines, useForgedBatches, useApiKey } from "./hooks/useStorage.js";
 import { useForge } from "./hooks/useForge.js";
 import { getAllLines, filterLines } from "./lib/lines.js";
-import CharacterGrid from "./components/CharacterGrid.jsx";
+import LeftPanel from "./components/LeftPanel.jsx";
+import RightPanel from "./components/RightPanel.jsx";
 import TrendingToday from "./components/TrendingToday.jsx";
 import LineFeed from "./components/LineFeed.jsx";
 import CharacterProfile from "./components/CharacterProfile.jsx";
 import ForgePanel from "./components/ForgePanel.jsx";
 import SettingsPanel from "./components/SettingsPanel.jsx";
-import EmotionChips from "./components/EmotionChips.jsx";
-import FilterChips from "./components/FilterChips.jsx";
 import BottomNav from "./components/BottomNav.jsx";
 import Toast from "./components/Toast.jsx";
 
@@ -19,7 +18,9 @@ const CSS = `
   --bg-0: #08080c; --bg-1: #0e0e14; --bg-2: #14141c; --bg-3: #1a1a24;
   --text-0: #f0f0f5; --text-1: #c0c0cc; --text-2: #808098; --text-3: #50506a;
   --red: #ef4444; --red-dim: rgba(239,68,68,0.12); --accent: #ef4444;
+  --panel-w: 230px;
 }
+html, body { height: 100%; overflow: hidden; }
 body { background: var(--bg-0); color: var(--text-1); }
 
 @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.8); opacity: 0; } }
@@ -41,12 +42,135 @@ body { background: var(--bg-0); color: var(--text-1); }
 .toast--exit { animation: toast-out 0.25s ease-in forwards; }
 
 .cat-tag { position: relative; cursor: help; }
-.cat-tag .cat-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); color: #c0c0cc; font-size: 10px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.cat-tag .cat-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); color: #c0c0cc; font-size: 12px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 .cat-tag .cat-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #1e1e2e; }
 .cat-tag:hover .cat-tip { visibility: visible; opacity: 1; }
 
-.char-scroll { overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
-.char-scroll::-webkit-scrollbar { display: none; }
+/* === 3-PANEL LAYOUT === */
+.app-shell {
+  display: flex; height: 100vh; width: 100%;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Sidebar shared */
+.left-panel, .right-panel {
+  width: var(--panel-w); flex-shrink: 0;
+  height: 100vh; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.06) transparent;
+  border-right: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+  padding: 16px 10px 80px;
+}
+.left-panel::-webkit-scrollbar, .right-panel::-webkit-scrollbar { width: 4px; }
+.left-panel::-webkit-scrollbar-thumb, .right-panel::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.06); border-radius: 4px;
+}
+.right-panel {
+  border-right: none; border-left: 1px solid rgba(255,255,255,0.04);
+}
+
+.panel-label {
+  font-size: 10px; font-weight: 800; color: #4b5563;
+  letter-spacing: 1.2px; margin-bottom: 10px;
+  padding: 0 4px; font-family: 'Outfit', sans-serif;
+}
+.panel-hint {
+  font-size: 9px; color: #333; text-align: center;
+  margin-top: 12px; font-style: italic;
+}
+.panel-section { margin-bottom: 20px; }
+
+/* Left panel — characters */
+.char-list { display: flex; flex-direction: column; gap: 4px; }
+.char-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px; border-radius: 8px; cursor: pointer;
+  user-select: none; transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: transparent;
+}
+.char-item:hover { background: rgba(255,255,255,0.03); }
+.char-item--active {
+  background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));
+  border-color: rgba(239,68,68,0.2);
+}
+.char-item-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
+.char-item-info { min-width: 0; }
+.char-item-name {
+  font-size: 11px; font-weight: 800; color: #e5e5ea;
+  letter-spacing: 0.3px; font-family: 'Outfit', sans-serif;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.char-item-energy {
+  font-size: 9px; color: #555; font-family: 'Outfit', sans-serif;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.char-item-energy--active { color: #ef4444; }
+
+/* Right panel — filter chips */
+.filter-stack { display: flex; flex-direction: column; gap: 3px; }
+.sidebar-chip {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; padding: 6px 10px; border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer; transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+  text-align: left;
+}
+.sidebar-chip:hover { background: rgba(255,255,255,0.04); }
+.sidebar-chip--active {
+  background: color-mix(in srgb, var(--chip-color) 10%, transparent);
+  border-color: color-mix(in srgb, var(--chip-color) 25%, transparent);
+}
+.sidebar-chip--active .sidebar-chip-text { color: var(--chip-color); }
+.sidebar-chip--active .sidebar-chip-icon { opacity: 1; }
+.sidebar-chip-icon { font-size: 14px; flex-shrink: 0; opacity: 0.7; }
+.sidebar-chip-text {
+  font-size: 12px; font-weight: 600; color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+/* Center column */
+.center-column {
+  flex: 1; min-width: 0; height: 100vh;
+  overflow-y: auto; padding-bottom: 80px;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.06) transparent;
+}
+.center-column::-webkit-scrollbar { width: 6px; }
+.center-column::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.06); border-radius: 4px;
+}
+
+/* Bottom nav adjustments for full-width layout */
+.bottom-nav-bar {
+  position: fixed; bottom: 0; left: var(--panel-w); right: var(--panel-w);
+  z-index: 50; background: rgba(8,8,12,0.95);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px); display: flex; padding: 10px 0 14px;
+}
+
+/* Responsive: collapse sidebars on narrow screens */
+@media (max-width: 900px) {
+  :root { --panel-w: 190px; }
+}
+@media (max-width: 700px) {
+  .app-shell { flex-direction: column; }
+  .left-panel, .right-panel {
+    width: 100%; height: auto; overflow-y: visible;
+    border-right: none; border-left: none;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    padding: 10px 12px;
+  }
+  .right-panel { border-bottom: none; border-top: 1px solid rgba(255,255,255,0.04); }
+  .char-list { flex-direction: row; flex-wrap: wrap; }
+  .filter-stack { flex-direction: row; flex-wrap: wrap; }
+  .sidebar-chip { width: auto; }
+  .center-column { height: auto; overflow-y: visible; }
+  .bottom-nav-bar { left: 0; right: 0; }
+  .app-shell { height: auto; overflow-y: auto; }
+  html, body { overflow: auto; }
+}
 `;
 
 const ALL_LINES = getAllLines();
@@ -169,40 +293,10 @@ export default function MentalKungFuApp() {
   return (
     <>
       <style>{CSS}</style>
-      <div ref={scrollRef} style={{
-        maxWidth: 720, margin: "0 auto", minHeight: "100vh",
-        paddingBottom: 70, fontFamily: "'Outfit',sans-serif",
-      }}>
-        {/* Header */}
-        <div style={{ padding: "16px 16px 0", textAlign: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: 7,
-              background: "linear-gradient(135deg, #ef4444, #991b1b)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 14,
-            }}>⚡</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#f5f5f7", letterSpacing: -0.5 }}>
-              Mental Kung Fu
-            </div>
-          </div>
-          <div style={{ fontSize: 9, color: "#4b5563", marginTop: 3, letterSpacing: 1, textTransform: "uppercase" }}>
-            Tactical Mindset Engine
-          </div>
-        </div>
-
-        <CharacterGrid
-          activeCharacters={activeCharacters}
-          onToggle={toggleCharacter}
-          onProfile={setProfileChar}
-        />
-
-        <EmotionChips
+      <div className="app-shell">
+        <RightPanel
           activeEmotions={activeEmotions}
-          onToggle={toggleEmotion}
-        />
-
-        <FilterChips
+          onToggleEmotion={toggleEmotion}
           activeMoods={activeMoods}
           onToggleMood={toggleMood}
           activeCategories={activeCategories}
@@ -211,22 +305,48 @@ export default function MentalKungFuApp() {
           onToggleSaved={() => setSavedOnly(v => !v)}
         />
 
-        <TrendingToday
-          batches={batches}
-          copiedId={copiedId}
-          onCopy={copyLine}
-          onSave={toggleSave}
-          savedSet={savedSet}
-        />
+        <div ref={scrollRef} className="center-column">
+          {/* Header */}
+          <div style={{ padding: "16px 16px 0", textAlign: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 7,
+                background: "linear-gradient(135deg, #ef4444, #991b1b)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 14,
+              }}>⚡</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: "#f5f5f7", letterSpacing: -0.5 }}>
+                Mental Kung Fu
+              </div>
+            </div>
+            <div style={{ fontSize: 9, color: "#4b5563", marginTop: 3, letterSpacing: 1, textTransform: "uppercase" }}>
+              Tactical Mindset Engine
+            </div>
+          </div>
 
-        <LineFeed
-          lines={filteredLines}
-          copiedId={copiedId}
-          onCopy={copyLine}
-          onSave={toggleSave}
-          savedSet={savedSet}
-          search={search}
-          onSearchChange={setSearch}
+          <TrendingToday
+            batches={batches}
+            copiedId={copiedId}
+            onCopy={copyLine}
+            onSave={toggleSave}
+            savedSet={savedSet}
+          />
+
+          <LineFeed
+            lines={filteredLines}
+            copiedId={copiedId}
+            onCopy={copyLine}
+            onSave={toggleSave}
+            savedSet={savedSet}
+            search={search}
+            onSearchChange={setSearch}
+          />
+        </div>
+
+        <LeftPanel
+          activeCharacters={activeCharacters}
+          onToggle={toggleCharacter}
+          onProfile={setProfileChar}
         />
       </div>
 

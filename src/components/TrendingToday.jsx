@@ -16,7 +16,7 @@ export default function TrendingToday({ batches, copiedId, onCopy, onSave, saved
         }}
       >
         <div style={{
-          fontSize: 10, fontWeight: 800, color: "#ef4444",
+          fontSize: 13, fontWeight: 800, color: "#ef4444",
           letterSpacing: 0.5, fontFamily: "'Outfit',sans-serif",
           display: "flex", alignItems: "center", gap: 5,
         }}>
@@ -27,7 +27,7 @@ export default function TrendingToday({ batches, copiedId, onCopy, onSave, saved
           <span>⚡ TRENDING TODAY</span>
           <div className="forge-pulse" style={{ width: 5, height: 5 }} />
         </div>
-        <div style={{ fontSize: 8, color: "#4b5563", fontFamily: "'Outfit',sans-serif" }}>
+        <div style={{ fontSize: 11, color: "#4b5563", fontFamily: "'Outfit',sans-serif" }}>
           {collapsed ? `${recentBatch.lines.length} lines` : "from current events"}
         </div>
       </div>

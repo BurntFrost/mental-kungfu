@@ -55,14 +55,14 @@ function SectionHeader({ icon, label, desc, color, count, expanded, onToggle }) 
       </div>
       <div style={{ flex: 1, textAlign: "left" }}>
         <div style={{
-          fontSize: 11, fontWeight: 800, color: color,
+          fontSize: 13, fontWeight: 800, color: color,
           fontFamily: "'Outfit',sans-serif", letterSpacing: 0.3,
         }}>
           {label}
         </div>
         {desc && (
           <div style={{
-            fontSize: 9, color: "#6b7280", fontFamily: "'Outfit',sans-serif",
+            fontSize: 11, color: "#6b7280", fontFamily: "'Outfit',sans-serif",
             marginTop: 1,
           }}>
             {desc}
@@ -71,7 +71,7 @@ function SectionHeader({ icon, label, desc, color, count, expanded, onToggle }) 
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
         <span style={{
-          fontSize: 9, fontWeight: 700, color: `${color}99`,
+          fontSize: 11, fontWeight: 700, color: `${color}99`,
           fontFamily: "'Outfit',sans-serif",
           background: `${color}10`, padding: "2px 7px", borderRadius: 10,
         }}>
@@ -136,13 +136,13 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{
-            fontSize: 10, fontWeight: 800, color: "#6b7280",
+            fontSize: 13, fontWeight: 800, color: "#6b7280",
             letterSpacing: 0.5, fontFamily: "'Outfit',sans-serif",
           }}>
             ALL LINES
           </div>
           <div style={{
-            fontSize: 8, color: "#4b5563", fontFamily: "'Outfit',sans-serif",
+            fontSize: 11, color: "#4b5563", fontFamily: "'Outfit',sans-serif",
             background: "rgba(255,255,255,0.04)", padding: "2px 6px", borderRadius: 8,
           }}>
             {lines.length}
@@ -158,8 +158,8 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
               title={m.label}
               style={{
                 background: viewMode === m.key ? "rgba(255,255,255,0.08)" : "transparent",
-                border: "none", borderRadius: 6, padding: "3px 8px",
-                fontSize: 9, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
+                border: "none", borderRadius: 6, padding: "4px 10px",
+                fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
                 color: viewMode === m.key ? "#f5f5f7" : "#4b5563",
                 cursor: "pointer", transition: "all 0.2s ease",
                 display: "flex", alignItems: "center", gap: 3,
@@ -180,7 +180,7 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
           onChange={e => onSearchChange(e.target.value)}
           placeholder="Search lines..."
           style={{
-            width: "100%", padding: "8px 12px", fontSize: 11,
+            width: "100%", padding: "9px 14px", fontSize: 13,
             background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
             borderRadius: 8, color: "#f5f5f7", fontFamily: "'Outfit',sans-serif",
             outline: "none",
