@@ -373,10 +373,17 @@ function saveSavedLines(lines) {
    API — FORGE ENGINE
    ═══════════════════════════════════════════════════════════ */
 
-async function forgeNewLines() {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+function loadApiKey() {
+  try { return localStorage.getItem("anthropic-api-key") || ""; } catch { return ""; }
+}
+
+function saveApiKey(key) {
+  try { localStorage.setItem("anthropic-api-key", key); } catch {}
+}
+
+async function forgeNewLines(apiKey) {
   if (!apiKey) {
-    throw new Error("API key not configured. Add VITE_ANTHROPIC_API_KEY to your .env file.");
+    throw new Error("API key required. Enter your Anthropic API key in the settings below.");
   }
 
   const catList = CAT_KEYS.join(", ");
@@ -587,12 +594,15 @@ export default function MentalKungFuApp() {
   const [autoForge, setAutoForge] = useState(false);
   const [forgeCount, setForgeCount] = useState(0);
   const [storageReady, setStorageReady] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [showKeyInput, setShowKeyInput] = useState(false);
   const autoRef = useRef(null);
 
   // Load persisted data synchronously from localStorage
   useEffect(() => {
     setForgedBatches(loadForged());
     setSavedLines(loadSaved());
+    setApiKey(loadApiKey());
     setStorageReady(true);
   }, []);
 
@@ -647,7 +657,7 @@ export default function MentalKungFuApp() {
     setForging(true);
     setForgeError(null);
     try {
-      const result = await forgeNewLines();
+      const result = await forgeNewLines(apiKey);
       const batch = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
@@ -669,7 +679,7 @@ export default function MentalKungFuApp() {
       setForgeError(err.message || "Forge failed");
     }
     setForging(false);
-  }, [forging, showToast]);
+  }, [forging, showToast, apiKey]);
 
   const deleteBatch = useCallback((batchId) => {
     setForgedBatches(prev => {
@@ -1054,6 +1064,66 @@ export default function MentalKungFuApp() {
               {autoForge && (
                 <div style={{ fontSize: 9, color: "#ef4444", marginTop: 8, textAlign: "center", fontFamily: "'Outfit',sans-serif", opacity: 0.7 }}>
                   ⚠ Auto-forging every 90s — uses API credits. Tap AUTO: ON to stop.
+                </div>
+              )}
+            </div>
+
+            {/* API Key Settings */}
+            <div style={{
+              padding: "12px 14px", marginBottom: 16,
+              background: "rgba(255,255,255,0.02)",
+              border: `1px solid ${apiKey ? "rgba(255,255,255,0.06)" : "rgba(239,68,68,0.2)"}`,
+              borderRadius: 10,
+            }}>
+              <button onClick={() => setShowKeyInput(v => !v)} style={{
+                background: "none", border: "none", cursor: "pointer",
+                color: apiKey ? "#6b7280" : "#ef4444",
+                fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
+                display: "flex", alignItems: "center", gap: 6, width: "100%",
+                padding: 0,
+              }}>
+                <span>{apiKey ? "🔑" : "⚠"}</span>
+                <span>{apiKey ? "API Key configured" : "API Key required"}</span>
+                <span style={{ marginLeft: "auto", fontSize: 9, opacity: 0.5 }}>
+                  {showKeyInput ? "▲" : "▼"}
+                </span>
+              </button>
+              {showKeyInput && (
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontSize: 9, color: "#6b7280", marginBottom: 6, fontFamily: "'Outfit',sans-serif", lineHeight: 1.5 }}>
+                    Enter your Anthropic API key. Stored locally in your browser — never sent anywhere except Anthropic's API.
+                    Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer"
+                      style={{ color: "#ef4444", textDecoration: "none" }}>console.anthropic.com</a>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input
+                      type="password"
+                      value={apiKey}
+                      onChange={e => {
+                        setApiKey(e.target.value);
+                        saveApiKey(e.target.value);
+                      }}
+                      placeholder="sk-ant-..."
+                      style={{
+                        flex: 1, padding: "8px 10px", fontSize: 12,
+                        background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 6, color: "#f5f5f7", fontFamily: "monospace",
+                        outline: "none",
+                      }}
+                      onFocus={e => e.target.style.borderColor = "rgba(239,68,68,0.3)"}
+                      onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
+                    />
+                    {apiKey && (
+                      <button onClick={() => { setApiKey(""); saveApiKey(""); showToast("API key removed"); }}
+                        style={{
+                          background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)",
+                          borderRadius: 6, color: "#ef4444", fontSize: 10, padding: "0 10px",
+                          cursor: "pointer", fontFamily: "'Outfit',sans-serif",
+                        }}>
+                        Clear
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
