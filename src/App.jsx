@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 /* ═══════════════════════════════════════════════════════════
    DATA — CORE SET + EXPANDED DECK
@@ -107,8 +107,6 @@ const CAT_KEYS = Object.keys(CATEGORIES);
    ═══════════════════════════════════════════════════════════ */
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
-
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 :root {
@@ -140,6 +138,14 @@ body { background: var(--bg-0); color: var(--text-1); }
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-10px) scale(0.95); }
+}
 
 .fade-in { animation: fade-in 0.35s ease-out both; }
 .scan-line::after {
@@ -154,10 +160,15 @@ body { background: var(--bg-0); color: var(--text-1); }
   position: relative;
 }
 .line-card:hover {
-  background: rgba(255,255,255,0.03) !important;
+  background: rgba(255,255,255,0.04) !important;
 }
 .line-card:active {
   transform: scale(0.985);
+}
+.line-card:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+  border-radius: 10px;
 }
 
 .forge-pulse {
@@ -186,38 +197,175 @@ body { background: var(--bg-0); color: var(--text-1); }
   overflow: hidden;
 }
 
+/* Tab buttons */
+.tab-btn {
+  flex: 1; padding: 14px 0; border: none; cursor: pointer;
+  background: transparent;
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.tab-btn:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+}
+.tab-btn--active {
+  color: #f5f5f7 !important;
+  border-bottom-color: #ef4444 !important;
+  background: rgba(239,68,68,0.04) !important;
+}
+.tab-btn--inactive {
+  color: #4b5563;
+}
+.tab-btn--inactive:hover {
+  color: #9ca3af;
+  background: rgba(255,255,255,0.02);
+}
+
+/* Save button */
+.save-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; padding: 4px 6px; flex-shrink: 0;
+  transition: all 0.15s;
+}
+.save-btn:hover {
+  transform: scale(1.2);
+}
+.save-btn:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Category header */
+.cat-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; cursor: pointer;
+  transition: all 0.2s;
+}
+.cat-header:hover {
+  background: rgba(255,255,255,0.03) !important;
+}
+.cat-header:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+  border-radius: 10px;
+}
+
+/* Deck line */
+.deck-line {
+  padding: 10px 16px 10px 44px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.deck-line:hover {
+  background: rgba(255,255,255,0.03);
+}
+.deck-line:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+}
+
+/* Forge action buttons */
+.forge-btn {
+  border: none; border-radius: 8px;
+  font-family: 'Outfit', sans-serif; font-weight: 700;
+  letter-spacing: 1px; cursor: pointer;
+  transition: all 0.2s;
+}
+.forge-btn:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+.forge-btn:disabled {
+  cursor: wait;
+}
+
+/* Toast notification */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 1000;
+  animation: toast-in 0.25s ease-out both;
+}
+.toast--exit {
+  animation: toast-out 0.2s ease-in both;
+}
+
+/* Search input */
+.search-input {
+  width: 100%; padding: 10px 14px 10px 36px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: #e8e8f0;
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.search-input:focus {
+  border-color: rgba(239,68,68,0.3);
+  background: rgba(255,255,255,0.05);
+}
+.search-input::placeholder {
+  color: #3a3a4a;
+}
+
+/* Clear batch button */
+.clear-batch-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 9px; color: #3a3a4a; padding: 2px 6px;
+  border-radius: 3px; transition: all 0.15s;
+  font-family: 'Outfit', sans-serif; font-weight: 600;
+}
+.clear-batch-btn:hover {
+  color: #ef4444;
+  background: rgba(239,68,68,0.08);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .stats-strip { gap: 10px !important; flex-wrap: wrap; }
+  .header-inner { padding: 24px 16px 14px !important; }
+  .content-area { padding: 12px 14px 80px !important; }
+  .line-card { padding: 12px 14px !important; }
+  .forge-controls { flex-direction: column !important; }
+}
+
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
 `;
 
 /* ═══════════════════════════════════════════════════════════
-   STORAGE HELPERS
+   STORAGE HELPERS — localStorage
    ═══════════════════════════════════════════════════════════ */
 
-async function loadForged() {
+function loadForged() {
   try {
-    const r = await window.storage.get("forged-lines");
-    return r ? JSON.parse(r.value) : [];
+    const raw = localStorage.getItem("forged-lines");
+    return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
 
-async function saveForged(lines) {
+function saveForged(lines) {
   try {
-    await window.storage.set("forged-lines", JSON.stringify(lines));
+    localStorage.setItem("forged-lines", JSON.stringify(lines));
   } catch (e) { console.error("Storage save error:", e); }
 }
 
-async function loadSaved() {
+function loadSaved() {
   try {
-    const r = await window.storage.get("saved-lines");
-    return r ? JSON.parse(r.value) : [];
+    const raw = localStorage.getItem("saved-lines");
+    return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
 
-async function saveSavedLines(lines) {
+function saveSavedLines(lines) {
   try {
-    await window.storage.set("saved-lines", JSON.stringify(lines));
+    localStorage.setItem("saved-lines", JSON.stringify(lines));
   } catch (e) { console.error("Storage save error:", e); }
 }
 
@@ -226,10 +374,20 @@ async function saveSavedLines(lines) {
    ═══════════════════════════════════════════════════════════ */
 
 async function forgeNewLines() {
+  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error("API key not configured. Add VITE_ANTHROPIC_API_KEY to your .env file.");
+  }
+
   const catList = CAT_KEYS.join(", ");
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1000,
@@ -253,21 +411,22 @@ STEP 3: Return ONLY valid JSON with no markdown formatting, no backticks, no pre
     })
   });
 
+  if (!response.ok) {
+    const errBody = await response.text().catch(() => "");
+    throw new Error(`API error ${response.status}: ${errBody.slice(0, 100)}`);
+  }
+
   const data = await response.json();
 
-  // Extract text blocks from response
   const textBlocks = (data.content || [])
     .filter(item => item.type === "text")
     .map(item => item.text)
     .join("\n");
 
-  // Find JSON in the response
   let parsed;
   try {
-    // Try direct parse first
     parsed = JSON.parse(textBlocks.trim());
   } catch {
-    // Try to find JSON object in text
     const jsonMatch = textBlocks.match(/\{[\s\S]*"lines"[\s\S]*\}/);
     if (jsonMatch) {
       parsed = JSON.parse(jsonMatch[0]);
@@ -283,10 +442,36 @@ STEP 3: Return ONLY valid JSON with no markdown formatting, no backticks, no pre
    COMPONENTS
    ═══════════════════════════════════════════════════════════ */
 
+function Toast({ message, visible }) {
+  if (!message) return null;
+  return (
+    <div className={`toast ${visible ? "" : "toast--exit"}`}>
+      <div style={{
+        padding: "10px 20px",
+        background: "rgba(16,185,129,0.95)",
+        borderRadius: 8,
+        fontSize: 12,
+        fontWeight: 600,
+        color: "#fff",
+        fontFamily: "'Outfit',sans-serif",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+      }}>
+        <span>✓</span> {message}
+      </div>
+    </div>
+  );
+}
+
 function LineCard({ line, category, index, onCopy, copied, onSave, saved, extra, forged }) {
   const cat = CATEGORIES[category] || { icon: "●", color: "#888" };
   return (
     <div className="line-card" onClick={() => onCopy(line)}
+      tabIndex={0}
+      role="button"
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onCopy(line); } }}
       style={{
         display: "flex", gap: 14, alignItems: "flex-start",
         padding: "16px 18px", marginBottom: 6,
@@ -301,14 +486,14 @@ function LineCard({ line, category, index, onCopy, copied, onSave, saved, extra,
         fontFamily: "'Outfit',sans-serif", fontSize: 13, fontWeight: 800, color: cat.color,
         flexShrink: 0,
       }}>
-        {index !== undefined ? String(index).padStart(2, "0") : cat.icon}
+        {index !== undefined ? cat.icon : cat.icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           fontFamily: "'Outfit',sans-serif", fontSize: 14, fontWeight: 500,
           color: "#e8e8f0", lineHeight: 1.55, marginBottom: 8,
         }}>
-          "{line}"
+          &ldquo;{line}&rdquo;
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <span style={{
@@ -328,12 +513,10 @@ function LineCard({ line, category, index, onCopy, copied, onSave, saved, extra,
       </div>
       {onSave && (
         <button onClick={(e) => { e.stopPropagation(); onSave(line, category); }}
-          style={{
-            background: "none", border: "none", cursor: "pointer",
-            fontSize: 16, color: saved ? "#f59e0b" : "#3a3a4a",
-            padding: "4px 6px", flexShrink: 0, transition: "color 0.15s",
-          }}
-          title={saved ? "Saved" : "Save to collection"}>
+          className="save-btn"
+          style={{ color: saved ? "#f59e0b" : "#3a3a4a" }}
+          title={saved ? "Remove from saved" : "Save to collection"}
+          aria-label={saved ? "Remove from saved" : "Save to collection"}>
           {saved ? "★" : "☆"}
         </button>
       )}
@@ -355,16 +538,46 @@ function NeuralActivity({ active }) {
   );
 }
 
+function SearchBar({ value, onChange, placeholder }) {
+  return (
+    <div style={{ position: "relative", marginBottom: 16 }}>
+      <span style={{
+        position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+        fontSize: 14, color: "#3a3a4a", pointerEvents: "none",
+      }}>⌕</span>
+      <input
+        type="text"
+        className="search-input"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
+      {value && (
+        <button onClick={() => onChange("")} style={{
+          position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+          background: "none", border: "none", color: "#6b7280", cursor: "pointer",
+          fontSize: 14, padding: "2px 4px",
+        }} aria-label="Clear search">✕</button>
+      )}
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════
    MAIN APP
    ═══════════════════════════════════════════════════════════ */
 
-const TABS = ["CORE", "DECK", "FORGE"];
+const TABS = ["CORE", "DECK", "SAVED", "FORGE"];
 
 export default function MentalKungFuApp() {
   const [tab, setTab] = useState("CORE");
   const [copiedId, setCopiedId] = useState(null);
-  const [expandedCat, setExpandedCat] = useState(null);
+  const [expandedCats, setExpandedCats] = useState(new Set());
+  const [search, setSearch] = useState("");
+
+  // Toast state
+  const [toast, setToast] = useState({ message: "", visible: false });
+  const toastTimer = useRef(null);
 
   // Forge state
   const [forgedBatches, setForgedBatches] = useState([]);
@@ -373,31 +586,60 @@ export default function MentalKungFuApp() {
   const [forgeError, setForgeError] = useState(null);
   const [autoForge, setAutoForge] = useState(false);
   const [forgeCount, setForgeCount] = useState(0);
+  const [storageReady, setStorageReady] = useState(false);
   const autoRef = useRef(null);
 
-  // Load persisted data
+  // Load persisted data synchronously from localStorage
   useEffect(() => {
-    loadForged().then(setForgedBatches);
-    loadSaved().then(setSavedLines);
+    setForgedBatches(loadForged());
+    setSavedLines(loadSaved());
+    setStorageReady(true);
+  }, []);
+
+  const showToast = useCallback((message) => {
+    clearTimeout(toastTimer.current);
+    setToast({ message, visible: true });
+    toastTimer.current = setTimeout(() => {
+      setToast(prev => ({ ...prev, visible: false }));
+      setTimeout(() => setToast({ message: "", visible: false }), 200);
+    }, 2000);
   }, []);
 
   const copyLine = useCallback((line, id) => {
     navigator.clipboard.writeText(line).then(() => {
       setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 1800);
+      showToast("Copied to clipboard");
+      setTimeout(() => setCopiedId(null), 2500);
     });
-  }, []);
+  }, [showToast]);
 
   const saveLine = useCallback((line, category) => {
     setSavedLines(prev => {
       const exists = prev.some(s => s.line === line);
       const next = exists ? prev.filter(s => s.line !== line) : [...prev, { line, category, savedAt: Date.now() }];
       saveSavedLines(next);
+      if (!exists) showToast("Saved to collection");
+      return next;
+    });
+  }, [showToast]);
+
+  const isLineSaved = useCallback((line) => savedLines.some(s => s.line === line), [savedLines]);
+
+  const toggleCat = useCallback((key) => {
+    setExpandedCats(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   }, []);
 
-  const isLineSaved = useCallback((line) => savedLines.some(s => s.line === line), [savedLines]);
+  const expandAllCats = useCallback(() => {
+    setExpandedCats(prev => {
+      if (prev.size === CAT_KEYS.length) return new Set();
+      return new Set(CAT_KEYS);
+    });
+  }, []);
 
   // Forge engine
   const runForge = useCallback(async () => {
@@ -417,22 +659,38 @@ export default function MentalKungFuApp() {
         })),
       };
       setForgedBatches(prev => {
-        const next = [batch, ...prev].slice(0, 20); // Keep last 20 batches
+        const next = [batch, ...prev].slice(0, 20);
         saveForged(next);
         return next;
       });
       setForgeCount(c => c + 1);
+      showToast(`Forged ${batch.lines.length} new lines`);
     } catch (err) {
-      setForgeError(err.message || "Forge failed. Retrying...");
+      setForgeError(err.message || "Forge failed");
     }
     setForging(false);
-  }, [forging]);
+  }, [forging, showToast]);
+
+  const deleteBatch = useCallback((batchId) => {
+    setForgedBatches(prev => {
+      const next = prev.filter(b => b.id !== batchId);
+      saveForged(next);
+      return next;
+    });
+    showToast("Batch removed");
+  }, [showToast]);
+
+  const clearAllBatches = useCallback(() => {
+    setForgedBatches([]);
+    saveForged([]);
+    showToast("All forged lines cleared");
+  }, [showToast]);
 
   // Auto-forge interval
   useEffect(() => {
     if (autoForge) {
       runForge();
-      autoRef.current = setInterval(runForge, 90000); // Every 90 seconds
+      autoRef.current = setInterval(runForge, 90000);
       return () => clearInterval(autoRef.current);
     } else {
       clearInterval(autoRef.current);
@@ -441,15 +699,32 @@ export default function MentalKungFuApp() {
 
   const totalForgedLines = forgedBatches.reduce((a, b) => a + b.lines.length, 0);
 
+  // Filter lines by search
+  const filterLine = useCallback((line) => {
+    if (!search) return true;
+    return line.toLowerCase().includes(search.toLowerCase());
+  }, [search]);
+
+  const filteredCore = useMemo(
+    () => CORE_SET.filter(item => filterLine(item.line)),
+    [filterLine]
+  );
+
+  const filteredSaved = useMemo(
+    () => savedLines.filter(item => filterLine(item.line)),
+    [savedLines, filterLine]
+  );
+
   return (
     <div className="scan-line" style={{
       minHeight: "100vh", background: "var(--bg-0)",
       fontFamily: "'IBM Plex Mono', monospace",
     }}>
       <style>{CSS}</style>
+      <Toast message={toast.message} visible={toast.visible} />
 
       {/* ── HEADER ── */}
-      <div style={{
+      <div className="header-inner" style={{
         padding: "32px 20px 16px", position: "relative",
         borderBottom: "1px solid rgba(255,255,255,0.04)",
         background: "linear-gradient(180deg, rgba(239,68,68,0.03) 0%, transparent 100%)",
@@ -480,7 +755,7 @@ export default function MentalKungFuApp() {
           </div>
 
           {/* Stats strip */}
-          <div style={{
+          <div className="stats-strip" style={{
             display: "flex", gap: 16, marginTop: 16,
             fontSize: 10, color: "#4b5563", letterSpacing: 1, textTransform: "uppercase",
           }}>
@@ -498,39 +773,50 @@ export default function MentalKungFuApp() {
         borderBottom: "1px solid rgba(255,255,255,0.04)",
       }}>
         {TABS.map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{
-            flex: 1, padding: "14px 0", border: "none", cursor: "pointer",
-            background: "transparent",
-            color: tab === t ? "#f5f5f7" : "#4b5563",
-            fontFamily: "'Outfit',sans-serif", fontSize: 12, fontWeight: 700,
-            letterSpacing: 2, textTransform: "uppercase",
-            borderBottom: tab === t ? "2px solid #ef4444" : "2px solid transparent",
-            transition: "all 0.2s",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-          }}>
+          <button key={t} onClick={() => { setTab(t); setSearch(""); }}
+            className={`tab-btn ${tab === t ? "tab-btn--active" : "tab-btn--inactive"}`}>
             {t}
+            {t === "SAVED" && savedLines.length > 0 && (
+              <span style={{
+                fontSize: 9, fontWeight: 700, color: tab === t ? "#10b981" : "#4b5563",
+                background: tab === t ? "rgba(16,185,129,0.1)" : "rgba(255,255,255,0.04)",
+                padding: "1px 5px", borderRadius: 3, minWidth: 18, textAlign: "center",
+              }}>{savedLines.length}</span>
+            )}
             {t === "FORGE" && autoForge && <div className="forge-pulse" style={{ width: 5, height: 5 }} />}
           </button>
         ))}
       </div>
 
       {/* ── CONTENT ── */}
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "16px 20px 80px" }}>
+      <div className="content-area" style={{ maxWidth: 680, margin: "0 auto", padding: "16px 20px 80px" }}>
 
         {/* ════════ CORE TAB ════════ */}
         {tab === "CORE" && (
           <div className="fade-in">
             <div style={{
-              padding: "14px 16px", marginBottom: 20,
+              padding: "14px 16px", marginBottom: 16,
               background: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.08)",
               borderRadius: 10, fontSize: 11, color: "#808098", lineHeight: 1.6,
               fontFamily: "'Outfit',sans-serif",
             }}>
-              <span style={{ color: "#ef4444", fontWeight: 700 }}>LOCKED</span> — Primary arsenal. 10 lines, 10 psychological vectors. Tap to copy.
+              <span style={{ color: "#ef4444", fontWeight: 700 }}>LOCKED</span> — Primary arsenal. 10 lines, 10 psychological vectors. Tap to copy, ☆ to save.
             </div>
-            {CORE_SET.map(item => (
+
+            <SearchBar value={search} onChange={setSearch} placeholder="Search core lines..." />
+
+            {filteredCore.length === 0 && search && (
+              <div style={{
+                textAlign: "center", padding: "40px 20px", color: "#3a3a4a",
+                fontFamily: "'Outfit',sans-serif",
+              }}>
+                <div style={{ fontSize: 13, color: "#6b7280" }}>No lines match &ldquo;{search}&rdquo;</div>
+              </div>
+            )}
+
+            {filteredCore.map(item => (
               <LineCard key={item.id} line={item.line} category={item.category}
-                index={item.id} copied={copiedId === `core-${item.id}`}
+                copied={copiedId === `core-${item.id}`}
                 onCopy={(l) => copyLine(l, `core-${item.id}`)}
                 onSave={saveLine} saved={isLineSaved(item.line)} />
             ))}
@@ -541,27 +827,49 @@ export default function MentalKungFuApp() {
         {tab === "DECK" && (
           <div className="fade-in">
             <div style={{
-              padding: "14px 16px", marginBottom: 20,
+              padding: "14px 16px", marginBottom: 16,
               background: "rgba(139,92,246,0.04)", border: "1px solid rgba(139,92,246,0.08)",
               borderRadius: 10, fontSize: 11, color: "#808098", lineHeight: 1.6,
               fontFamily: "'Outfit',sans-serif",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
-              <span style={{ color: "#8b5cf6", fontWeight: 700 }}>EXPANDED</span> — 10 categories × 6 lines. Core marked ◆. Tap category to expand, tap line to copy.
+              <div>
+                <span style={{ color: "#8b5cf6", fontWeight: 700 }}>EXPANDED</span> — 10 categories × 6 lines. Core marked ◆. Tap to copy.
+              </div>
+              <button onClick={expandAllCats} style={{
+                background: "none", border: "1px solid rgba(139,92,246,0.15)",
+                borderRadius: 5, padding: "4px 10px", cursor: "pointer",
+                fontSize: 9, fontWeight: 700, letterSpacing: 1, color: "#8b5cf6",
+                fontFamily: "'Outfit',sans-serif", whiteSpace: "nowrap", flexShrink: 0,
+                marginLeft: 12,
+              }}>
+                {expandedCats.size === CAT_KEYS.length ? "COLLAPSE ALL" : "EXPAND ALL"}
+              </button>
             </div>
+
+            <SearchBar value={search} onChange={setSearch} placeholder="Search across all categories..." />
+
             {CAT_KEYS.map(key => {
               const cat = CATEGORIES[key];
-              const isOpen = expandedCat === key;
+              const isOpen = expandedCats.has(key);
               const coreLines = CORE_SET.filter(c => c.category === key).map(c => c.line);
+              const filteredCatLines = cat.lines.filter(filterLine);
+
+              // If searching and no matches in this category, hide it
+              if (search && filteredCatLines.length === 0) return null;
+
               return (
                 <div key={key} style={{ marginBottom: 4 }}>
-                  <div onClick={() => setExpandedCat(isOpen ? null : key)}
+                  <div className="cat-header"
+                    tabIndex={0}
+                    role="button"
+                    aria-expanded={isOpen}
+                    onClick={() => toggleCat(key)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleCat(key); } }}
                     style={{
-                      display: "flex", alignItems: "center", gap: 12,
-                      padding: "14px 16px", cursor: "pointer",
                       background: isOpen ? `${cat.color}06` : "rgba(255,255,255,0.015)",
                       border: `1px solid ${isOpen ? `${cat.color}20` : "rgba(255,255,255,0.04)"}`,
                       borderRadius: isOpen ? "10px 10px 0 0" : 10,
-                      transition: "all 0.2s",
                     }}>
                     <div style={{
                       width: 30, height: 30, borderRadius: 6,
@@ -576,26 +884,30 @@ export default function MentalKungFuApp() {
                     <span style={{
                       fontSize: 9, color: "#4b5563", fontWeight: 600,
                       padding: "2px 6px", borderRadius: 3, background: "rgba(255,255,255,0.03)",
-                    }}>{cat.lines.length}</span>
+                    }}>{search ? filteredCatLines.length : cat.lines.length}</span>
                     <span style={{ color: "#4b5563", fontSize: 12, transition: "transform 0.2s", transform: isOpen ? "rotate(180deg)" : "none" }}>▾</span>
                   </div>
-                  {isOpen && (
+                  {(isOpen || search) && (
                     <div style={{
                       background: `${cat.color}03`, border: `1px solid ${cat.color}10`,
                       borderTop: "none", borderRadius: "0 0 10px 10px", padding: "6px 0 10px",
                     }}>
-                      <div style={{
-                        padding: "6px 16px 10px", fontSize: 9, color: "#6b7280",
-                        fontStyle: "italic", borderBottom: `1px solid ${cat.color}08`, marginBottom: 4,
-                        fontFamily: "'Outfit',sans-serif",
-                      }}>Archetype: {cat.archetype}</div>
-                      {cat.lines.map((line, li) => {
+                      {!search && (
+                        <div style={{
+                          padding: "6px 16px 10px", fontSize: 9, color: "#6b7280",
+                          fontStyle: "italic", borderBottom: `1px solid ${cat.color}08`, marginBottom: 4,
+                          fontFamily: "'Outfit',sans-serif",
+                        }}>Archetype: {cat.archetype}</div>
+                      )}
+                      {filteredCatLines.map((line, li) => {
                         const isCore = coreLines.includes(line);
                         const lid = `deck-${key}-${li}`;
                         return (
-                          <div key={li} className="line-card"
+                          <div key={li} className="deck-line"
+                            tabIndex={0}
+                            role="button"
                             onClick={() => copyLine(line, lid)}
-                            style={{ padding: "10px 16px 10px 44px", position: "relative" }}>
+                            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copyLine(line, lid); } }}>
                             <span style={{
                               position: "absolute", left: 18, top: 12,
                               fontSize: 10, fontWeight: 700, color: isCore ? cat.color : "#3a3a4a",
@@ -604,11 +916,13 @@ export default function MentalKungFuApp() {
                               fontFamily: "'Outfit',sans-serif", fontSize: 13,
                               color: isCore ? "#e5e5ea" : "#a0a0b0",
                               fontWeight: isCore ? 500 : 400, lineHeight: 1.5,
-                            }}>"{line}"</div>
+                            }}>&ldquo;{line}&rdquo;</div>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
                               {copiedId === lid && <span style={{ fontSize: 9, color: "#10b981", fontWeight: 700 }}>✓ COPIED</span>}
                               <button onClick={(e) => { e.stopPropagation(); saveLine(line, key); }}
-                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: isLineSaved(line) ? "#f59e0b" : "#2a2a3a", padding: "0 4px" }}>
+                                className="save-btn"
+                                style={{ fontSize: 13, color: isLineSaved(line) ? "#f59e0b" : "#2a2a3a", padding: "0 4px" }}
+                                aria-label={isLineSaved(line) ? "Remove from saved" : "Save to collection"}>
                                 {isLineSaved(line) ? "★" : "☆"}
                               </button>
                             </div>
@@ -620,25 +934,53 @@ export default function MentalKungFuApp() {
                 </div>
               );
             })}
+          </div>
+        )}
 
-            {/* SAVED SECTION */}
-            {savedLines.length > 0 && (
-              <div style={{ marginTop: 24 }}>
+        {/* ════════ SAVED TAB ════════ */}
+        {tab === "SAVED" && (
+          <div className="fade-in">
+            {savedLines.length === 0 ? (
+              <div style={{
+                textAlign: "center", padding: "60px 20px",
+                color: "#3a3a4a", fontFamily: "'Outfit',sans-serif",
+              }}>
+                <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.3 }}>★</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#6b7280" }}>No saved lines yet</div>
+                <div style={{ fontSize: 12, color: "#4b5563", marginTop: 6, lineHeight: 1.6 }}>
+                  Tap the ☆ icon on any line to save it here.<br />
+                  Build your personal arsenal.
+                </div>
+              </div>
+            ) : (
+              <>
                 <div style={{
-                  fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#f59e0b",
-                  textTransform: "uppercase", marginBottom: 12, fontFamily: "'Outfit',sans-serif",
-                  display: "flex", alignItems: "center", gap: 8,
-                }}>★ SAVED COLLECTION <span style={{
-                  fontSize: 9, color: "#6b7280", fontWeight: 600,
-                  padding: "1px 6px", borderRadius: 3, background: "rgba(255,255,255,0.03)",
-                }}>{savedLines.length}</span></div>
-                {savedLines.map((s, i) => (
+                  padding: "14px 16px", marginBottom: 16,
+                  background: "rgba(16,185,129,0.04)", border: "1px solid rgba(16,185,129,0.08)",
+                  borderRadius: 10, fontSize: 11, color: "#808098", lineHeight: 1.6,
+                  fontFamily: "'Outfit',sans-serif",
+                }}>
+                  <span style={{ color: "#10b981", fontWeight: 700 }}>SAVED</span> — Your personal collection. {savedLines.length} line{savedLines.length !== 1 ? "s" : ""} saved.
+                </div>
+
+                <SearchBar value={search} onChange={setSearch} placeholder="Search saved lines..." />
+
+                {filteredSaved.length === 0 && search && (
+                  <div style={{
+                    textAlign: "center", padding: "40px 20px", color: "#3a3a4a",
+                    fontFamily: "'Outfit',sans-serif",
+                  }}>
+                    <div style={{ fontSize: 13, color: "#6b7280" }}>No saved lines match &ldquo;{search}&rdquo;</div>
+                  </div>
+                )}
+
+                {filteredSaved.map((s, i) => (
                   <LineCard key={`saved-${i}`} line={s.line} category={s.category}
                     copied={copiedId === `saved-${i}`}
                     onCopy={(l) => copyLine(l, `saved-${i}`)}
                     onSave={saveLine} saved={true} />
                 ))}
-              </div>
+              </>
             )}
           </div>
         )}
@@ -678,27 +1020,31 @@ export default function MentalKungFuApp() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 10 }}>
+              <div className="forge-controls" style={{ display: "flex", gap: 10 }}>
                 <button onClick={runForge} disabled={forging}
-                  className={forging ? "" : "shimmer-btn"}
+                  className={`forge-btn ${forging ? "" : "shimmer-btn"}`}
                   style={{
-                    flex: 1, padding: "12px 0", border: "none", borderRadius: 8,
+                    flex: 1, padding: "12px 0",
                     background: forging ? "#2a2a3a" : undefined,
                     color: forging ? "#6b7280" : "#fff",
-                    fontFamily: "'Outfit',sans-serif", fontSize: 13, fontWeight: 700,
-                    letterSpacing: 1, cursor: forging ? "wait" : "pointer",
-                    transition: "all 0.2s",
+                    fontSize: 13,
                   }}>
                   {forging ? "◎ FORGING..." : "⚡ FORGE NOW"}
                 </button>
-                <button onClick={() => setAutoForge(!autoForge)}
+                <button onClick={() => {
+                  if (!autoForge) {
+                    setAutoForge(true);
+                  } else {
+                    setAutoForge(false);
+                  }
+                }}
+                  className="forge-btn"
                   style={{
-                    padding: "12px 18px", border: `1px solid ${autoForge ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.06)"}`,
-                    borderRadius: 8,
+                    padding: "12px 18px",
+                    border: `1px solid ${autoForge ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.06)"}`,
                     background: autoForge ? "rgba(239,68,68,0.08)" : "rgba(255,255,255,0.02)",
                     color: autoForge ? "#ef4444" : "#6b7280",
-                    fontFamily: "'Outfit',sans-serif", fontSize: 11, fontWeight: 700,
-                    letterSpacing: 1, cursor: "pointer", transition: "all 0.2s",
+                    fontSize: 11,
                     display: "flex", alignItems: "center", gap: 6,
                   }}>
                   {autoForge && <div className="forge-pulse" style={{ width: 5, height: 5 }} />}
@@ -707,7 +1053,7 @@ export default function MentalKungFuApp() {
               </div>
               {autoForge && (
                 <div style={{ fontSize: 9, color: "#ef4444", marginTop: 8, textAlign: "center", fontFamily: "'Outfit',sans-serif", opacity: 0.7 }}>
-                  Generating new lines every 90 seconds from live events
+                  ⚠ Auto-forging every 90s — uses API credits. Tap AUTO: ON to stop.
                 </div>
               )}
             </div>
@@ -736,7 +1082,9 @@ export default function MentalKungFuApp() {
 
             {forging && forgedBatches.length === 0 && (
               <div style={{ textAlign: "center", padding: "50px 20px" }}>
-                <NeuralActivity active={true} />
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <NeuralActivity active={true} />
+                </div>
                 <div style={{
                   fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#6b7280",
                   marginTop: 16,
@@ -748,68 +1096,96 @@ export default function MentalKungFuApp() {
               </div>
             )}
 
-            {/* Forged Batches */}
-            {forgedBatches.map((batch, bi) => (
-              <div key={batch.id} className="fade-in" style={{ marginBottom: 20 }}>
-                {/* Batch header */}
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 10, marginBottom: 10,
-                  padding: "10px 14px",
-                  background: "rgba(255,255,255,0.015)", borderRadius: 8,
-                  border: "1px solid rgba(255,255,255,0.03)",
-                }}>
-                  <span style={{
-                    fontSize: 9, fontWeight: 700, letterSpacing: 1.5,
-                    color: "#ef4444", textTransform: "uppercase",
-                    fontFamily: "'Outfit',sans-serif",
-                  }}>BATCH #{forgedBatches.length - bi}</span>
-                  <span style={{ fontSize: 9, color: "#3a3a4a" }}>•</span>
-                  <span style={{ fontSize: 9, color: "#4b5563", fontFamily: "'Outfit',sans-serif" }}>
-                    {new Date(batch.timestamp).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                  <span style={{ fontSize: 9, color: "#3a3a4a" }}>•</span>
-                  <span style={{ fontSize: 9, color: "#4b5563", fontFamily: "'Outfit',sans-serif" }}>
-                    {batch.lines.length} lines
-                  </span>
+            {/* Search + Clear controls for batches */}
+            {forgedBatches.length > 0 && (
+              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12 }}>
+                <div style={{ flex: 1 }}>
+                  <SearchBar value={search} onChange={setSearch} placeholder="Search forged lines..." />
                 </div>
-
-                {/* Source events */}
-                {batch.events.length > 0 && (
-                  <div style={{
-                    padding: "10px 14px", marginBottom: 8,
-                    background: "rgba(255,255,255,0.01)", borderRadius: 8,
-                    border: "1px solid rgba(255,255,255,0.02)",
+                <button onClick={clearAllBatches}
+                  className="clear-batch-btn"
+                  style={{
+                    padding: "8px 12px", fontSize: 10, marginBottom: 16,
+                    border: "1px solid rgba(239,68,68,0.1)", borderRadius: 6,
                   }}>
-                    <div style={{
-                      fontSize: 8, fontWeight: 700, letterSpacing: 2, color: "#3a3a4a",
-                      textTransform: "uppercase", marginBottom: 6, fontFamily: "'Outfit',sans-serif",
-                    }}>SOURCE EVENTS</div>
-                    {batch.events.slice(0, 5).map((ev, ei) => (
-                      <div key={ei} style={{
-                        fontSize: 10, color: "#6b7280", lineHeight: 1.5,
-                        padding: "2px 0", fontFamily: "'Outfit',sans-serif",
-                        display: "flex", gap: 6,
-                      }}>
-                        <span style={{ color: "#3a3a4a" }}>›</span>
-                        <span>{ev.headline}</span>
-                        {ev.source && <span style={{ color: "#3a3a4a", fontStyle: "italic" }}>— {ev.source}</span>}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Generated lines */}
-                {batch.lines.map((item, li) => (
-                  <LineCard key={item.id} line={item.line}
-                    category={CATEGORIES[item.category] ? item.category : "REFRAME"}
-                    copied={copiedId === item.id}
-                    onCopy={(l) => copyLine(l, item.id)}
-                    onSave={saveLine} saved={isLineSaved(item.line)}
-                    extra={item.inspired_by ? `← ${item.inspired_by}` : ""}
-                    forged={true} />
-                ))}
+                  CLEAR ALL
+                </button>
               </div>
-            ))}
+            )}
+
+            {/* Forged Batches */}
+            {forgedBatches.map((batch, bi) => {
+              const filteredBatchLines = batch.lines.filter(item => filterLine(item.line));
+              if (search && filteredBatchLines.length === 0) return null;
+
+              return (
+                <div key={batch.id} className="fade-in" style={{ marginBottom: 20 }}>
+                  {/* Batch header */}
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 10, marginBottom: 10,
+                    padding: "10px 14px",
+                    background: "rgba(255,255,255,0.015)", borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,0.03)",
+                  }}>
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, letterSpacing: 1.5,
+                      color: "#ef4444", textTransform: "uppercase",
+                      fontFamily: "'Outfit',sans-serif",
+                    }}>BATCH #{forgedBatches.length - bi}</span>
+                    <span style={{ fontSize: 9, color: "#3a3a4a" }}>·</span>
+                    <span style={{ fontSize: 9, color: "#4b5563", fontFamily: "'Outfit',sans-serif" }}>
+                      {new Date(batch.timestamp).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    <span style={{ fontSize: 9, color: "#3a3a4a" }}>·</span>
+                    <span style={{ fontSize: 9, color: "#4b5563", fontFamily: "'Outfit',sans-serif" }}>
+                      {batch.lines.length} lines
+                    </span>
+                    <button onClick={() => deleteBatch(batch.id)}
+                      className="clear-batch-btn"
+                      style={{ marginLeft: "auto" }}
+                      aria-label="Delete batch">
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Source events */}
+                  {batch.events.length > 0 && !search && (
+                    <div style={{
+                      padding: "10px 14px", marginBottom: 8,
+                      background: "rgba(255,255,255,0.01)", borderRadius: 8,
+                      border: "1px solid rgba(255,255,255,0.02)",
+                    }}>
+                      <div style={{
+                        fontSize: 8, fontWeight: 700, letterSpacing: 2, color: "#3a3a4a",
+                        textTransform: "uppercase", marginBottom: 6, fontFamily: "'Outfit',sans-serif",
+                      }}>SOURCE EVENTS</div>
+                      {batch.events.slice(0, 5).map((ev, ei) => (
+                        <div key={ei} style={{
+                          fontSize: 10, color: "#6b7280", lineHeight: 1.5,
+                          padding: "2px 0", fontFamily: "'Outfit',sans-serif",
+                          display: "flex", gap: 6,
+                        }}>
+                          <span style={{ color: "#3a3a4a" }}>›</span>
+                          <span>{ev.headline}</span>
+                          {ev.source && <span style={{ color: "#3a3a4a", fontStyle: "italic" }}>— {ev.source}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Generated lines */}
+                  {filteredBatchLines.map((item) => (
+                    <LineCard key={item.id} line={item.line}
+                      category={CATEGORIES[item.category] ? item.category : "REFRAME"}
+                      copied={copiedId === item.id}
+                      onCopy={(l) => copyLine(l, item.id)}
+                      onSave={saveLine} saved={isLineSaved(item.line)}
+                      extra={item.inspired_by ? `← ${item.inspired_by}` : ""}
+                      forged={true} />
+                  ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
