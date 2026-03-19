@@ -165,7 +165,7 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
                 display: "flex", alignItems: "center", gap: 3,
               }}
             >
-              <span style={{ fontSize: 9 }}>{m.icon}</span>
+              <span style={{ fontSize: 11 }}>{m.icon}</span>
               {m.label}
             </button>
           ))}
@@ -196,7 +196,7 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
         }}>
           <div style={{ fontSize: 24, marginBottom: 8 }}>◌</div>
           <div style={{ fontSize: 13, color: "#6b7280" }}>No lines match your filters</div>
-          <div style={{ fontSize: 10, color: "#4b5563", marginTop: 4 }}>Try adjusting your character or mood filters</div>
+          <div style={{ fontSize: 12, color: "#4b5563", marginTop: 4 }}>Try adjusting your character or mood filters</div>
         </div>
       )}
 

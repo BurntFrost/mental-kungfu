@@ -42,8 +42,8 @@ body { background: var(--bg-0); color: var(--text-1); }
 .toast--exit { animation: toast-out 0.25s ease-in forwards; }
 
 .cat-tag { position: relative; cursor: help; }
-.cat-tag .cat-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); color: #c0c0cc; font-size: 12px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-.cat-tag .cat-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #1e1e2e; }
+.cat-tag .cat-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 0; white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); color: #c0c0cc; font-size: 13px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.cat-tag .cat-tip::after { content: ''; position: absolute; top: 100%; left: 12px; border: 4px solid transparent; border-top-color: #1e1e2e; }
 .cat-tag:hover .cat-tip { visibility: visible; opacity: 1; }
 
 /* === 3-PANEL LAYOUT === */
@@ -70,12 +70,12 @@ body { background: var(--bg-0); color: var(--text-1); }
 }
 
 .panel-label {
-  font-size: 10px; font-weight: 800; color: #4b5563;
+  font-size: 11px; font-weight: 800; color: #4b5563;
   letter-spacing: 1.2px; margin-bottom: 10px;
   padding: 0 4px; font-family: 'Outfit', sans-serif;
 }
 .panel-hint {
-  font-size: 9px; color: #333; text-align: center;
+  font-size: 10px; color: #333; text-align: center;
   margin-top: 12px; font-style: italic;
 }
 .panel-section { margin-bottom: 20px; }
@@ -89,20 +89,32 @@ body { background: var(--bg-0); color: var(--text-1); }
   border: 1px solid transparent;
   background: transparent;
 }
-.char-item:hover { background: rgba(255,255,255,0.03); }
+.char-item:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.08);
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.char-item:hover .char-item-name { color: #fff; }
+.char-item:hover .char-item-energy { color: #888; }
 .char-item--active {
   background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));
   border-color: rgba(239,68,68,0.2);
 }
+.char-item--active:hover {
+  background: linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.08));
+  border-color: rgba(239,68,68,0.3);
+  box-shadow: 0 2px 12px rgba(239,68,68,0.15);
+}
 .char-item-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
 .char-item-info { min-width: 0; }
 .char-item-name {
-  font-size: 11px; font-weight: 800; color: #e5e5ea;
+  font-size: 13px; font-weight: 800; color: #e5e5ea;
   letter-spacing: 0.3px; font-family: 'Outfit', sans-serif;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .char-item-energy {
-  font-size: 9px; color: #555; font-family: 'Outfit', sans-serif;
+  font-size: 10px; color: #555; font-family: 'Outfit', sans-serif;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .char-item-energy--active { color: #ef4444; }
@@ -118,16 +130,28 @@ body { background: var(--bg-0); color: var(--text-1); }
   font-family: 'Outfit', sans-serif;
   text-align: left;
 }
-.sidebar-chip:hover { background: rgba(255,255,255,0.04); }
+.sidebar-chip:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+  transform: translateX(2px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.sidebar-chip:hover .sidebar-chip-text { color: #a0a0b0; }
+.sidebar-chip:hover .sidebar-chip-icon { opacity: 1; }
+.sidebar-chip--active:hover {
+  background: color-mix(in srgb, var(--chip-color) 15%, transparent);
+  border-color: color-mix(in srgb, var(--chip-color) 35%, transparent);
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--chip-color) 15%, transparent);
+}
 .sidebar-chip--active {
   background: color-mix(in srgb, var(--chip-color) 10%, transparent);
   border-color: color-mix(in srgb, var(--chip-color) 25%, transparent);
 }
 .sidebar-chip--active .sidebar-chip-text { color: var(--chip-color); }
 .sidebar-chip--active .sidebar-chip-icon { opacity: 1; }
-.sidebar-chip-icon { font-size: 14px; flex-shrink: 0; opacity: 0.7; }
+.sidebar-chip-icon { font-size: 16px; flex-shrink: 0; opacity: 0.7; }
 .sidebar-chip-text {
-  font-size: 12px; font-weight: 600; color: #6b7280;
+  font-size: 13px; font-weight: 600; color: #6b7280;
   transition: color 0.2s ease;
 }
 
@@ -319,7 +343,7 @@ export default function MentalKungFuApp() {
                 Mental Kung Fu
               </div>
             </div>
-            <div style={{ fontSize: 9, color: "#4b5563", marginTop: 3, letterSpacing: 1, textTransform: "uppercase" }}>
+            <div style={{ fontSize: 10, color: "#4b5563", marginTop: 3, letterSpacing: 1, textTransform: "uppercase" }}>
               Tactical Mindset Engine
             </div>
           </div>
