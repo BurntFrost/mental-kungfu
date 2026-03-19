@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useSavedLines, useForgedBatches, useApiKey } from "./hooks/useStorage.js";
 import { useForge } from "./hooks/useForge.js";
 import { getAllLines, filterLines } from "./lib/lines.js";
@@ -97,6 +97,11 @@ body { background: var(--bg-0); color: var(--text-1); }
 .char-pill .char-pill-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.15); color: #e0e0ea; font-size: 12px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
 .char-pill .char-pill-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #1e1e2e; }
 .char-pill:hover .char-pill-tip { visibility: visible; opacity: 1; }
+
+/* Easter egg: build version tooltip on logo */
+.version-tooltip::after { content: attr(data-version); visibility: hidden; opacity: 0; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: linear-gradient(135deg, #1e1e2e, #2a1a2e); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; font-size: 11px; font-weight: 600; font-family: 'Outfit',monospace; letter-spacing: 0.5px; pointer-events: none; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 50; box-shadow: 0 4px 16px rgba(239,68,68,0.15); }
+.version-tooltip::before { content: ''; visibility: hidden; opacity: 0; position: absolute; top: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-bottom-color: rgba(239,68,68,0.25); z-index: 50; transition: opacity 0.2s ease, visibility 0.2s ease; }
+.version-tooltip:hover::after, .version-tooltip:hover::before { visibility: visible; opacity: 1; }
 
 /* === 3-PANEL LAYOUT === */
 .app-shell {
@@ -276,6 +281,23 @@ export default function MentalKungFuApp() {
   const toastTimer = useRef(null);
   const scrollRef = useRef(null);
 
+  // Easter egg: click logo 10 times to reveal build version
+  const [logoClicks, setLogoClicks] = useState(0);
+  const [versionUnlocked, setVersionUnlocked] = useState(false);
+  const clickTimer = useRef(null);
+  const handleLogoClick = useCallback(() => {
+    setLogoClicks(prev => {
+      const next = prev + 1;
+      if (next >= 10) {
+        setVersionUnlocked(true);
+        return 0;
+      }
+      return next;
+    });
+    clearTimeout(clickTimer.current);
+    clickTimer.current = setTimeout(() => setLogoClicks(0), 2000);
+  }, []);
+
   // Data hooks
   const { savedLines, savedSet, toggleSave } = useSavedLines();
   const { batches, addBatch, deleteBatch, clearAll } = useForgedBatches();
@@ -392,12 +414,18 @@ export default function MentalKungFuApp() {
           {/* Header */}
           <div style={{ padding: "16px 16px 0", textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: 7,
-                background: "linear-gradient(135deg, #ef4444, #991b1b)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 14,
-              }}>⚡</div>
+              <div
+                onClick={handleLogoClick}
+                className={versionUnlocked ? "version-tooltip" : ""}
+                data-version={`v${__APP_VERSION__} · build ${__BUILD_NUMBER__} · ${new Date(__BUILD_TIME__).toLocaleDateString()}`}
+                style={{
+                  width: 28, height: 28, borderRadius: 7,
+                  background: "linear-gradient(135deg, #ef4444, #991b1b)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 14, cursor: "pointer", userSelect: "none",
+                  position: "relative",
+                }}
+              >⚡</div>
               <div style={{ fontSize: 18, fontWeight: 800, color: "#f5f5f7", letterSpacing: -0.5 }}>
                 Mental Kung Fu
               </div>
