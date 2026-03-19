@@ -4,6 +4,9 @@ export const MOOD_MAP = {
   Existential: ["EXISTENTIAL", "IDENTITY"],
   Dismissive: ["DISMISSAL", "REFRAME"],
   Stoic: ["STOIC", "SCALE"],
+  Ruthless: ["TEMPO", "CONTROL"],
+  Philosophical: ["EXISTENTIAL", "SCALE"],
+  Defiant: ["IDENTITY", "REFRAME"],
 };
 
 export const MOOD_META = {
@@ -12,16 +15,20 @@ export const MOOD_META = {
   Existential:  { icon: "🕳️", desc: "Turn their reality inside out" },
   Dismissive:   { icon: "🤚", desc: "Acknowledge and discard" },
   Stoic:        { icon: "🗿", desc: "Immovable, unshakeable" },
+  Ruthless:     { icon: "🐍", desc: "No mercy, surgical precision" },
+  Philosophical:{ icon: "🦉", desc: "Transcend the situation entirely" },
+  Defiant:      { icon: "✊", desc: "Unyielding, unbowed, unbroken" },
 };
 
 export const MOOD_NAMES = Object.keys(MOOD_MAP);
 
-/** Given a category string, return its mood */
-export function getMoodForCategory(category) {
+/** Given a category string, return all moods that include it */
+export function getMoodsForCategory(category) {
+  const result = [];
   for (const [mood, cats] of Object.entries(MOOD_MAP)) {
-    if (cats.includes(category)) return mood;
+    if (cats.includes(category)) result.push(mood);
   }
-  return null;
+  return result;
 }
 
 /** Category display metadata (icon, color, description) */

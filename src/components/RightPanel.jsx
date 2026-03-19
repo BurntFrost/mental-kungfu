@@ -23,6 +23,7 @@ export default function RightPanel({
                 key={emotion}
                 onClick={() => onToggleEmotion(emotion)}
                 className={`sidebar-chip ${active ? "sidebar-chip--active" : ""}`}
+                title={meta.desc}
                 style={{
                   "--chip-color": meta.color,
                 }}

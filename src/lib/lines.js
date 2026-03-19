@@ -2,6 +2,7 @@ import { CATEGORIES, CATEGORY_KEYS } from "../data/categories.js";
 import { CATEGORY_META } from "../data/moods.js";
 import { MOOD_MAP } from "../data/moods.js";
 import { EMOTION_MAP } from "../data/emotions.js";
+import { CHARACTERS } from "../data/characters.js";
 
 /**
  * Build flat array of all static lines from categories.
@@ -63,7 +64,11 @@ export function filterLines(lines, { characters, moods, emotions, categories, sa
 
   if (search.trim()) {
     const q = search.toLowerCase();
-    result = result.filter(l => l.line.toLowerCase().includes(q));
+    result = result.filter(l =>
+      l.line.toLowerCase().includes(q) ||
+      (CHARACTERS[l.character]?.name.toLowerCase().includes(q)) ||
+      l.category.toLowerCase().includes(q)
+    );
   }
 
   return result;

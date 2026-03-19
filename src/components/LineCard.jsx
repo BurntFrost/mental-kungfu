@@ -1,4 +1,4 @@
-import { CATEGORY_META } from "../data/moods.js";
+import { CATEGORY_META, getMoodsForCategory, MOOD_META } from "../data/moods.js";
 import { CHARACTERS } from "../data/characters.js";
 import { getEmotionsForCategory, EMOTION_META } from "../data/emotions.js";
 
@@ -6,6 +6,7 @@ export default function LineCard({ line, category, character, copied, onCopy, on
   const cat = CATEGORY_META[category] || { icon: "?", color: "#666" };
   const char = CHARACTERS[character];
   const emotions = getEmotionsForCategory(category);
+  const moods = getMoodsForCategory(category);
 
   return (
     <div
@@ -54,9 +55,22 @@ export default function LineCard({ line, category, character, copied, onCopy, on
         {extra && (
           <span style={{ fontSize: 11, color: "#444", fontFamily: "'Outfit',sans-serif" }}>← {extra.replace(/^←\s*/, "")}</span>
         )}
+        {moods.map(m => (
+          <span
+            key={`mood-${m}`}
+            className="cat-tag"
+            style={{
+              fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
+              color: "rgba(255,255,255,0.35)",
+            }}
+          >
+            {MOOD_META[m]?.icon} {m}
+            {MOOD_META[m]?.desc && <span className="cat-tip">{MOOD_META[m].desc}</span>}
+          </span>
+        ))}
         {emotions.map(e => (
           <span
-            key={e}
+            key={`emo-${e}`}
             className="cat-tag"
             style={{
               fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
