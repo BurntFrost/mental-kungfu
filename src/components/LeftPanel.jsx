@@ -43,6 +43,7 @@ export default function LeftPanel({ activeCharacters, onToggle, onProfile }) {
             <div
               key={id}
               className={`char-item ${active ? "char-item--active" : ""}`}
+              title={`${c.name} — ${c.source}`}
               onPointerDown={() => handlePointerDown(id)}
               onPointerUp={() => handlePointerUp(id)}
               onPointerLeave={handlePointerLeave}
@@ -55,6 +56,7 @@ export default function LeftPanel({ activeCharacters, onToggle, onProfile }) {
                 <div className={`char-item-energy ${active ? "char-item-energy--active" : ""}`}>
                   {c.energy}
                 </div>
+                <div className="char-item-source">{c.source}</div>
               </div>
             </div>
           );

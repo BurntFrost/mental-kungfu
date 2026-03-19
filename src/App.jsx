@@ -46,6 +46,12 @@ body { background: var(--bg-0); color: var(--text-1); }
 .cat-tag .cat-tip::after { content: ''; position: absolute; top: 100%; left: 12px; border: 4px solid transparent; border-top-color: #1e1e2e; }
 .cat-tag:hover .cat-tip { visibility: visible; opacity: 1; }
 
+/* Inline character pill tooltip (line cards) */
+.char-pill { position: relative; cursor: help; }
+.char-pill .char-pill-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.15); color: #e0e0ea; font-size: 12px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+.char-pill .char-pill-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #1e1e2e; }
+.char-pill:hover .char-pill-tip { visibility: visible; opacity: 1; }
+
 /* === 3-PANEL LAYOUT === */
 .app-shell {
   display: flex; height: 100vh; width: 100%;
@@ -118,6 +124,13 @@ body { background: var(--bg-0); color: var(--text-1); }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .char-item-energy--active { color: #ef4444; }
+.char-item-source {
+  font-size: 9px; color: transparent; font-family: 'Outfit', sans-serif;
+  font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: color 0.2s ease; max-height: 0; overflow: hidden;
+  transition: color 0.2s ease, max-height 0.2s ease;
+}
+.char-item:hover .char-item-source { color: #666; max-height: 14px; }
 
 /* Right panel — filter chips */
 .filter-stack { display: flex; flex-direction: column; gap: 3px; }

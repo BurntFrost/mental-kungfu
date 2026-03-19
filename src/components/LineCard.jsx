@@ -46,8 +46,9 @@ export default function LineCard({ line, category, character, copied, onCopy, on
           {cat.desc && <span className="cat-tip">{cat.desc}</span>}
         </span>
         {char && (
-          <span style={{ fontSize: 11, color: "#555", fontFamily: "'Outfit',sans-serif" }}>
+          <span className="char-pill" style={{ fontSize: 11, color: "#555", fontFamily: "'Outfit',sans-serif" }}>
             {char.icon} {char.name}
+            <span className="char-pill-tip">📽 {char.source}</span>
           </span>
         )}
         {extra && (
