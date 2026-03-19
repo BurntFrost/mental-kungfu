@@ -1,5 +1,5 @@
 import { EMOTION_NAMES, EMOTION_META } from "../data/emotions.js";
-import { MOOD_MAP, MOOD_NAMES } from "../data/moods.js";
+import { MOOD_MAP, MOOD_NAMES, MOOD_META } from "../data/moods.js";
 import { CATEGORY_META } from "../data/moods.js";
 import { CATEGORY_KEYS } from "../data/categories.js";
 
@@ -41,14 +41,16 @@ export default function RightPanel({
         <div className="filter-stack">
           {MOOD_NAMES.map(mood => {
             const active = activeMoods.has(mood);
+            const meta = MOOD_META[mood];
             return (
               <button
                 key={mood}
                 onClick={() => onToggleMood(mood)}
                 className={`sidebar-chip sidebar-chip--mood ${active ? "sidebar-chip--active" : ""}`}
-                title={`${mood}: ${(MOOD_MAP[mood] || []).map(c => c.charAt(0) + c.slice(1).toLowerCase()).join(" + ")}`}
+                title={`${mood}: ${meta?.desc || (MOOD_MAP[mood] || []).map(c => c.charAt(0) + c.slice(1).toLowerCase()).join(" + ")}`}
                 style={{ "--chip-color": "#ef4444" }}
               >
+                <span className="sidebar-chip-icon">{meta?.icon}</span>
                 <span className="sidebar-chip-text">{mood}</span>
               </button>
             );

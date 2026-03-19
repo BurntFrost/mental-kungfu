@@ -31,51 +31,56 @@ body { background: var(--bg-0); color: var(--text-1); }
 @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
 
 .fade-in { animation: fade-in 0.35s ease-out both; }
+
+/* Section grid — collapsed sections as cards */
+.section-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px; margin: 10px 0;
+}
+.grid-section-card {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 14px 10px; border-radius: 10px; cursor: pointer;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.2s ease; position: relative; overflow: hidden;
+  text-align: center; width: 100%;
+}
+.grid-section-card:hover {
+  background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);
+  transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.grid-section-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.grid-section-label {
+  font-size: 12px; font-weight: 800; font-family: 'Outfit',sans-serif;
+  letter-spacing: 0.3px;
+}
+.grid-section-desc {
+  font-size: 10px; color: #6b7280; font-family: 'Outfit',sans-serif;
+  line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.grid-section-count {
+  font-size: 10px; font-weight: 700; font-family: 'Outfit',sans-serif;
+  padding: 2px 8px; border-radius: 10px; margin-top: 2px;
+}
+.grid-section-active {
+  position: absolute; bottom: 0; left: 20%; right: 20%;
+  height: 2px; border-radius: 2px;
+}
+
 /* Quote layout modes */
 .quote-list { display: flex; flex-direction: column; }
-.quote-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+.quote-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.quote-grid .line-card { margin-bottom: 0; display: flex; flex-direction: column; }
+.quote-grid .line-card > div:first-child { flex: 1; }
 
 .line-card { transition: all 0.2s ease; cursor: pointer; position: relative; }
 .line-card:hover { background: rgba(255,255,255,0.04) !important; }
 .line-card:active { transform: scale(0.985); }
 .line-card:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; border-radius: 10px; }
-
-/* Grid card styles */
-.grid-card {
-  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 10px; padding: 14px; cursor: pointer; position: relative;
-  transition: all 0.2s ease; display: flex; flex-direction: column;
-  min-height: 100px;
-}
-.grid-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-.grid-card:active { transform: scale(0.98); }
-.grid-card-quote {
-  font-size: 14px; color: #f5f5f7; line-height: 1.5; font-family: 'Outfit',sans-serif;
-  flex: 1; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
-}
-.grid-card-footer {
-  display: flex; align-items: center; gap: 6px; margin-top: 10px;
-  padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.04);
-}
-.grid-card-char {
-  font-size: 11px; color: #555; font-family: 'Outfit',sans-serif;
-  flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.grid-card-forged {
-  font-size: 10px; background: rgba(239,68,68,0.1); color: #ef4444;
-  padding: 1px 5px; border-radius: 4px; font-weight: 700;
-}
-.grid-card-save {
-  background: none; border: none; cursor: pointer; font-size: 13px;
-  color: #333; padding: 0; transition: color 0.2s ease;
-}
-.grid-card-save:hover { color: #f59e0b; }
-.grid-card-copied {
-  position: absolute; top: 8px; right: 8px;
-  font-size: 10px; color: #22c55e; font-weight: 700;
-  font-family: 'Outfit',sans-serif; background: rgba(34,197,94,0.1);
-  padding: 2px 6px; border-radius: 4px;
-}
 .forge-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--red); position: relative; }
 .forge-pulse::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 1px solid var(--red); animation: pulse-ring 2s ease-out infinite; }
 .shimmer-btn { background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c, #dc2626, #ef4444); background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }

@@ -2,7 +2,7 @@ export const CHARACTERS = {
   wick: {
     id: "wick",
     name: "John Wick",
-    icon: "🎯",
+    icon: "✏️",
     energy: "Silent force",
     philosophy: "Capability implied through stillness. The legend precedes the man — violence is a last resort that never feels like one.",
     source: "John Wick",
@@ -11,7 +11,7 @@ export const CHARACTERS = {
   durden: {
     id: "durden",
     name: "Tyler Durden",
-    icon: "🔥",
+    icon: "🧼",
     energy: "The mirror",
     philosophy: "The existential mirror that fights back. You defeat yourself — he just shows you where.",
     source: "Fight Club",
@@ -20,7 +20,7 @@ export const CHARACTERS = {
   six: {
     id: "six",
     name: "Sierra Six",
-    icon: "👤",
+    icon: "👻",
     energy: "Ghost protocol",
     philosophy: "Quiet professionalism with zero ego. A ghost who gets the job done before anyone knows he was there.",
     source: "The Gray Man",
@@ -29,7 +29,7 @@ export const CHARACTERS = {
   specter: {
     id: "specter",
     name: "Harvey Specter",
-    icon: "⚖️",
+    icon: "👔",
     energy: "Dominance",
     philosophy: "The outcome is already decided — the courtroom is just theater. Dominance as procedure.",
     source: "Suits",
@@ -38,7 +38,7 @@ export const CHARACTERS = {
   seven: {
     id: "seven",
     name: "Seven of Nine",
-    icon: "🧊",
+    icon: "💠",
     energy: "Cold logic",
     philosophy: "Emotional irrelevance as a weapon. Efficiency without sentiment — your feelings are not her variable.",
     source: "Star Trek: Voyager",
@@ -65,7 +65,7 @@ export const CHARACTERS = {
   snape: {
     id: "snape",
     name: "Snape",
-    icon: "🐍",
+    icon: "🧪",
     energy: "Cutting precision",
     philosophy: "Surgical cruelty wrapped in restraint. Every word is a scalpel — he doesn't insult you, he dissects you.",
     source: "Harry Potter",
@@ -83,7 +83,7 @@ export const CHARACTERS = {
   stark: {
     id: "stark",
     name: "Tony Stark",
-    icon: "⚙️",
+    icon: "🦾",
     energy: "Genius wit",
     philosophy: "Intellect weaponized as charm. He's already solved the problem — the banter is just him waiting for you to catch up.",
     source: "Marvel",
@@ -92,7 +92,7 @@ export const CHARACTERS = {
   thanos: {
     id: "thanos",
     name: "Thanos",
-    icon: "💎",
+    icon: "♾️",
     energy: "Cosmic inevitability",
     philosophy: "The universe bends toward his conclusion. He doesn't threaten — he informs you of what's already happening.",
     source: "Marvel",
@@ -110,7 +110,7 @@ export const CHARACTERS = {
   strange: {
     id: "strange",
     name: "Dr. Strange",
-    icon: "🔮",
+    icon: "🌀",
     energy: "Dimensional superiority",
     philosophy: "He's seen 14 million outcomes. Your plan wasn't in any of them. Arrogance backed by omniscience.",
     source: "Marvel",
@@ -155,7 +155,7 @@ export const CHARACTERS = {
   rorschach: {
     id: "rorschach",
     name: "Rorschach",
-    icon: "🖤",
+    icon: "✒️",
     energy: "Unbreakable absolutism",
     philosophy: "No compromise, no flexibility, no fear. The world bends or it breaks — he won't. Moral force so rigid it becomes its own gravity.",
     source: "Watchmen",
@@ -182,7 +182,7 @@ export const CHARACTERS = {
   loki: {
     id: "loki",
     name: "Loki",
-    icon: "🪞",
+    icon: "🦊",
     energy: "Shapeshifting narrative",
     philosophy: "Truth is whatever story serves him best. He doesn't lie — he offers you a more interesting version of reality and watches you choose it.",
     source: "Marvel",
@@ -191,7 +191,7 @@ export const CHARACTERS = {
   bane: {
     id: "bane",
     name: "Bane",
-    icon: "💀",
+    icon: "💪",
     energy: "Forged suffering",
     philosophy: "Pain was his teacher, darkness his classroom. He didn't survive — he graduated. Your comfort is the weakness he was never allowed to have.",
     source: "The Dark Knight Rises",
@@ -218,7 +218,7 @@ export const CHARACTERS = {
   killmonger: {
     id: "killmonger",
     name: "Killmonger",
-    icon: "👊",
+    icon: "🐆",
     energy: "Righteous fury",
     philosophy: "Rage sharpened into a thesis. He doesn't just want to win — he wants to prove the system that created him was the real villain all along.",
     source: "Black Panther",

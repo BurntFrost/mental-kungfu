@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import LineCard from "./LineCard.jsx";
 import { groupLinesByCategory } from "../lib/lines.js";
-import { CHARACTERS } from "../data/characters.js";
+import { CHARACTERS } from "../data/characters.js"; // used by groupLinesByCharacter
 
 const VIEW_MODES = [
   { key: "grouped", label: "By Category", icon: "▦" },
@@ -95,32 +95,17 @@ function SectionHeader({ icon, label, desc, color, count, expanded, onToggle }) 
   );
 }
 
-function GridCard({ line, character, category, copied, onCopy, onSave, saved, forged }) {
-  const char = CHARACTERS[character];
+function GridSectionCard({ icon, label, desc, color, count, expanded, onToggle }) {
   return (
-    <div
-      className="grid-card"
-      onClick={() => onCopy(line)}
-      tabIndex={0}
-      role="button"
-      aria-label={`Copy: ${line}`}
-    >
-      <div className="grid-card-quote">"{line}"</div>
-      <div className="grid-card-footer">
-        <span className="grid-card-char">
-          {char?.icon} {char?.name?.split(" ").pop()}
-        </span>
-        {forged && <span className="grid-card-forged">⚡</span>}
-        <button
-          onClick={e => { e.stopPropagation(); onSave(line, category); }}
-          className="grid-card-save"
-          aria-label={saved ? "Unsave" : "Save"}
-        >
-          {saved ? "★" : "☆"}
-        </button>
+    <button onClick={onToggle} className="grid-section-card" style={{ "--sec-color": color }}>
+      <div className="grid-section-icon" style={{ background: `${color}15` }}>{icon}</div>
+      <div className="grid-section-label" style={{ color }}>{label}</div>
+      <div className="grid-section-desc">{desc}</div>
+      <div className="grid-section-count" style={{ background: `${color}10`, color: `${color}cc` }}>
+        {count}
       </div>
-      {copied && <div className="grid-card-copied">✓ COPIED</div>}
-    </div>
+      {expanded && <div className="grid-section-active" style={{ background: color }} />}
+    </button>
   );
 }
 
@@ -179,25 +164,9 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
     />
   );
 
-  const renderGridCard = (l) => (
-    <GridCard
-      key={l.id}
-      line={l.line}
-      category={l.category}
-      character={l.character || "wick"}
-      copied={copiedId === l.id}
-      onCopy={() => onCopy(l.line, l.id)}
-      onSave={onSave}
-      saved={savedSet.has(l.line)}
-      forged={l.source === "forged"}
-    />
-  );
-
-  const renderCard = layout === "grid" ? renderGridCard : renderLineCard;
-
   const renderCards = (items) => (
     <div className={`fade-in ${layout === "grid" ? "quote-grid" : "quote-list"}`}>
-      {items.map(renderCard)}
+      {items.map(renderLineCard)}
     </div>
   );
 
@@ -316,36 +285,104 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
       )}
 
       {/* Grouped by Category */}
-      {viewMode === "grouped" && grouped.map(group => (
-        <div key={group.key}>
-          <SectionHeader
-            icon={group.meta.icon}
-            label={group.key.charAt(0) + group.key.slice(1).toLowerCase()}
-            desc={group.meta.desc}
-            color={group.meta.color}
-            count={group.lines.length}
-            expanded={expanded.has(group.key)}
-            onToggle={() => toggleSection(group.key)}
-          />
-          {expanded.has(group.key) && renderCards(group.lines)}
-        </div>
-      ))}
+      {viewMode === "grouped" && (
+        <>
+          {/* Collapsed section cards */}
+          {layout === "grid" ? (
+            <div className="section-grid">
+              {grouped.filter(g => !expanded.has(g.key)).map(group => (
+                <GridSectionCard
+                  key={group.key}
+                  icon={group.meta.icon}
+                  label={group.key.charAt(0) + group.key.slice(1).toLowerCase()}
+                  desc={group.meta.desc}
+                  color={group.meta.color}
+                  count={group.lines.length}
+                  expanded={false}
+                  onToggle={() => toggleSection(group.key)}
+                />
+              ))}
+            </div>
+          ) : (
+            grouped.filter(g => !expanded.has(g.key)).map(group => (
+              <SectionHeader
+                key={group.key}
+                icon={group.meta.icon}
+                label={group.key.charAt(0) + group.key.slice(1).toLowerCase()}
+                desc={group.meta.desc}
+                color={group.meta.color}
+                count={group.lines.length}
+                expanded={false}
+                onToggle={() => toggleSection(group.key)}
+              />
+            ))
+          )}
+          {/* Expanded sections — always full width */}
+          {grouped.filter(g => expanded.has(g.key)).map(group => (
+            <div key={group.key}>
+              <SectionHeader
+                icon={group.meta.icon}
+                label={group.key.charAt(0) + group.key.slice(1).toLowerCase()}
+                desc={group.meta.desc}
+                color={group.meta.color}
+                count={group.lines.length}
+                expanded={true}
+                onToggle={() => toggleSection(group.key)}
+              />
+              {renderCards(group.lines)}
+            </div>
+          ))}
+        </>
+      )}
 
       {/* Grouped by Character */}
-      {viewMode === "character" && byCharacter.map(group => (
-        <div key={group.key}>
-          <SectionHeader
-            icon={group.meta.icon}
-            label={group.label}
-            desc={group.meta.desc}
-            color={group.meta.color}
-            count={group.lines.length}
-            expanded={expanded.has(`char-${group.key}`)}
-            onToggle={() => toggleSection(`char-${group.key}`)}
-          />
-          {expanded.has(`char-${group.key}`) && renderCards(group.lines)}
-        </div>
-      ))}
+      {viewMode === "character" && (
+        <>
+          {layout === "grid" ? (
+            <div className="section-grid">
+              {byCharacter.filter(g => !expanded.has(`char-${g.key}`)).map(group => (
+                <GridSectionCard
+                  key={group.key}
+                  icon={group.meta.icon}
+                  label={group.label}
+                  desc={group.meta.desc}
+                  color={group.meta.color}
+                  count={group.lines.length}
+                  expanded={false}
+                  onToggle={() => toggleSection(`char-${group.key}`)}
+                />
+              ))}
+            </div>
+          ) : (
+            byCharacter.filter(g => !expanded.has(`char-${g.key}`)).map(group => (
+              <SectionHeader
+                key={group.key}
+                icon={group.meta.icon}
+                label={group.label}
+                desc={group.meta.desc}
+                color={group.meta.color}
+                count={group.lines.length}
+                expanded={false}
+                onToggle={() => toggleSection(`char-${group.key}`)}
+              />
+            ))
+          )}
+          {byCharacter.filter(g => expanded.has(`char-${g.key}`)).map(group => (
+            <div key={group.key}>
+              <SectionHeader
+                icon={group.meta.icon}
+                label={group.label}
+                desc={group.meta.desc}
+                color={group.meta.color}
+                count={group.lines.length}
+                expanded={true}
+                onToggle={() => toggleSection(`char-${group.key}`)}
+              />
+              {renderCards(group.lines)}
+            </div>
+          ))}
+        </>
+      )}
 
       {/* Shuffled flat list */}
       {viewMode === "shuffle" && (

@@ -6,7 +6,7 @@
 
 export const CATEGORIES = {
   REFRAME: {
-    icon: "↻",
+    icon: "🔄",
     color: "#3b82f6",
     desc: "Flip their attack into your advantage",
     lines: [
@@ -27,7 +27,7 @@ export const CATEGORIES = {
     ],
   },
   SCALE: {
-    icon: "△",
+    icon: "⛰️",
     color: "#8b5cf6",
     desc: "Establish you operate on a different plane",
     lines: [
@@ -48,7 +48,7 @@ export const CATEGORIES = {
     ],
   },
   TEMPO: {
-    icon: "◉",
+    icon: "⚡",
     color: "#ef4444",
     desc: "Show you're already three moves ahead",
     lines: [
@@ -67,7 +67,7 @@ export const CATEGORIES = {
     ],
   },
   INDIFFERENCE: {
-    icon: "◌",
+    icon: "🫥",
     color: "#64748b",
     desc: "Erase them from the equation entirely",
     lines: [
@@ -87,7 +87,7 @@ export const CATEGORIES = {
     ],
   },
   DISMISSAL: {
-    icon: "⊘",
+    icon: "✋",
     color: "#f59e0b",
     desc: "Acknowledge and discard in one breath",
     lines: [
@@ -108,7 +108,7 @@ export const CATEGORIES = {
     ],
   },
   STOIC: {
-    icon: "◇",
+    icon: "🪨",
     color: "#06b6d4",
     desc: "Weaponize calm — let stillness do the damage",
     lines: [
@@ -128,7 +128,7 @@ export const CATEGORIES = {
     ],
   },
   INEVITABILITY: {
-    icon: "⊞",
+    icon: "⏳",
     color: "#10b981",
     desc: "Frame the outcome as already decided",
     lines: [
@@ -149,7 +149,7 @@ export const CATEGORIES = {
     ],
   },
   CONTROL: {
-    icon: "⊕",
+    icon: "🎯",
     color: "#ec4899",
     desc: "Mastery over the system itself",
     lines: [
@@ -170,7 +170,7 @@ export const CATEGORIES = {
     ],
   },
   EXISTENTIAL: {
-    icon: "◈",
+    icon: "🪞",
     color: "#f43f5e",
     desc: "Turn their own mind against them",
     lines: [
@@ -191,7 +191,7 @@ export const CATEGORIES = {
     ],
   },
   IDENTITY: {
-    icon: "⬡",
+    icon: "👑",
     color: "#a855f7",
     desc: "Define yourself so completely they can't",
     lines: [
