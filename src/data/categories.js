@@ -21,6 +21,9 @@ export const CATEGORIES = {
       { line: "You just handed me the blueprint to your insecurity. Thanks.", character: "stark" },
       { line: "You think you're unpredictable? I diagnosed you before you sat down.", character: "lecter" },
       { line: "You showed me your hand. I didn't even ask to play.", character: "heisenberg" },
+      { line: "You thought that was a wound? That was just the invitation to begin.", character: "morpheus" },
+      { line: "Your insult was a key. Thank you — you just unlocked a better version of me.", character: "v" },
+      { line: "You tried to diminish me. All you did was sharpen my focus.", character: "killmonger" },
     ],
   },
   SCALE: {
@@ -39,6 +42,9 @@ export const CATEGORIES = {
       { line: "You call it ambition. I call it the bare minimum.", character: "thanos" },
       { line: "You built a kingdom. I built one in a year. In a basement.", character: "heisenberg" },
       { line: "I don't climb ladders. I remove the people standing on them.", character: "lecter" },
+      { line: "You see a ceiling. I see a cage you built for yourself.", character: "morpheus" },
+      { line: "I deduced your ceiling in the first three seconds. It's lower than you think.", character: "sherlock" },
+      { line: "You're measuring power in kingdoms. I measure it in centuries.", character: "gandalf" },
     ],
   },
   TEMPO: {
@@ -55,6 +61,9 @@ export const CATEGORIES = {
       { line: "I built the prototype while you were still writing the spec.", character: "stark" },
       { line: "I've already seen how this ends. Fourteen million times.", character: "strange" },
       { line: "You're still reacting. I finished this conversation ten minutes ago.", character: "heisenberg" },
+      { line: "You're planning your next move. I planned this entire conversation before you arrived.", character: "sherlock" },
+      { line: "You think you're early. I've been here since before the board was set.", character: "gandalf" },
+      { line: "You haven't started yet. I've already changed the narrative twice.", character: "loki" },
     ],
   },
   INDIFFERENCE: {
@@ -73,6 +82,8 @@ export const CATEGORIES = {
       { line: "I don't have a list of enemies. I have a list of things to do. You're not on either.", character: "batman" },
       { line: "You exist in my peripheral vision. Barely.", character: "lecter" },
       { line: "Your opinion would require me to first acknowledge you exist.", character: "chigurh" },
+      { line: "Shaken? No. I didn't even stir.", character: "bond" },
+      { line: "Hmm.", character: "geralt" },
     ],
   },
   DISMISSAL: {
@@ -91,6 +102,9 @@ export const CATEGORIES = {
       { line: "That was your play? I've seen better plans from interns.", character: "stark" },
       { line: "You call that a threat? I've had more dangerous dinner guests.", character: "lecter" },
       { line: "You thought that mattered. That's the funniest part.", character: "joker" },
+      { line: "I've dismissed better theories before breakfast. Yours didn't even make the list.", character: "sherlock" },
+      { line: "That was your grand play? I've seen better from swamp creatures.", character: "geralt" },
+      { line: "You had my attention for exactly half a martini. It's finished.", character: "bond" },
     ],
   },
   STOIC: {
@@ -108,6 +122,9 @@ export const CATEGORIES = {
       { line: "Your anger is illogical. My calm is structural.", character: "spock" },
       { line: "You flipped the table. I never sat down.", character: "chigurh" },
       { line: "The world screams. I just watch. Quietly.", character: "rorschach" },
+      { line: "Your pain is a choice. I've made mine. Have you?", character: "bane" },
+      { line: "Wind's howling. Your opinion isn't.", character: "geralt" },
+      { line: "The mountain doesn't answer the wind. Why would I answer you?", character: "gandalf" },
     ],
   },
   INEVITABILITY: {
@@ -126,6 +143,9 @@ export const CATEGORIES = {
       { line: "I prepared for this Tuesday. You prepared for this your whole life.", character: "batman" },
       { line: "The coin already landed. You just haven't looked down yet.", character: "chigurh" },
       { line: "You're not losing. You already lost. This is just the paperwork.", character: "heisenberg" },
+      { line: "This was always going to happen. I just let you believe you had a choice.", character: "soze" },
+      { line: "You think you can stop what's coming? I've survived what already came.", character: "bane" },
+      { line: "The revolution isn't coming. It's already here. You just haven't looked outside.", character: "v" },
     ],
   },
   CONTROL: {
@@ -144,6 +164,9 @@ export const CATEGORIES = {
       { line: "You found a contingency. I have contingencies for my contingencies.", character: "batman" },
       { line: "You think rules protect you. I think rules are the first thing to go.", character: "joker" },
       { line: "I don't break systems. I show people they were already broken.", character: "joker" },
+      { line: "You thought you were free. I just changed which cage you're in.", character: "loki" },
+      { line: "You never saw who was really pulling the strings. That was the point.", character: "soze" },
+      { line: "Behind this mask is an idea. And ideas are beyond your jurisdiction.", character: "v" },
     ],
   },
   EXISTENTIAL: {
@@ -162,6 +185,9 @@ export const CATEGORIES = {
       { line: "You fear me because I'm what happens when potential isn't wasted.", character: "thanos" },
       { line: "I'm not reading your mind. I'm reading your face. It's saying everything.", character: "lecter" },
       { line: "You built your identity on sand. I just pointed at the tide.", character: "joker" },
+      { line: "You think the system protects you? I am what the system created. Look at me.", character: "killmonger" },
+      { line: "I didn't break your spirit. I just showed you it was already borrowed.", character: "bane" },
+      { line: "You're so certain of your reality. That's exactly how I designed it.", character: "loki" },
     ],
   },
   IDENTITY: {
@@ -181,6 +207,12 @@ export const CATEGORIES = {
       { line: "I am the one who knocks. You are the one who answers.", character: "heisenberg" },
       { line: "I don't compromise. I don't bend. You do. Or you break.", character: "rorschach" },
       { line: "I'm not locked in here with you. You're locked in here with me.", character: "rorschach" },
+      { line: "I'm not the hero. I'm the consequence of every hero who failed.", character: "killmonger" },
+      { line: "I wore a mask long before the scars. The mask is who I chose to be.", character: "v" },
+      { line: "I survived the pit. You can barely survive a Monday.", character: "bane" },
+      { line: "I don't have a cover story. I have seven. Pick your favorite.", character: "bond" },
+      { line: "I told you the truth. You just assumed it was a lie. That's my favorite part.", character: "loki" },
+      { line: "A wizard is never late. Nor is he early. He arrives precisely when he means to.", character: "gandalf" },
     ],
   },
 };

@@ -9,6 +9,11 @@ const VIEW_MODES = [
   { key: "shuffle", label: "Shuffle", icon: "⟳" },
 ];
 
+const LAYOUT_MODES = [
+  { key: "list", icon: "☰" },
+  { key: "grid", icon: "⊞" },
+];
+
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -90,25 +95,72 @@ function SectionHeader({ icon, label, desc, color, count, expanded, onToggle }) 
   );
 }
 
+function GridCard({ line, character, category, copied, onCopy, onSave, saved, forged }) {
+  const char = CHARACTERS[character];
+  return (
+    <div
+      className="grid-card"
+      onClick={() => onCopy(line)}
+      tabIndex={0}
+      role="button"
+      aria-label={`Copy: ${line}`}
+    >
+      <div className="grid-card-quote">"{line}"</div>
+      <div className="grid-card-footer">
+        <span className="grid-card-char">
+          {char?.icon} {char?.name?.split(" ").pop()}
+        </span>
+        {forged && <span className="grid-card-forged">⚡</span>}
+        <button
+          onClick={e => { e.stopPropagation(); onSave(line, category); }}
+          className="grid-card-save"
+          aria-label={saved ? "Unsave" : "Save"}
+        >
+          {saved ? "★" : "☆"}
+        </button>
+      </div>
+      {copied && <div className="grid-card-copied">✓ COPIED</div>}
+    </div>
+  );
+}
+
 export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, search, onSearchChange }) {
   const [viewMode, setViewMode] = useState("grouped");
-  const [collapsed, setCollapsed] = useState(new Set());
+  const [layout, setLayout] = useState("grid");
+  // Start with all sections collapsed
+  const [expanded, setExpanded] = useState(new Set());
   const [shuffleSeed, setShuffleSeed] = useState(0);
 
   const toggleSection = useCallback((key) => {
-    setCollapsed(prev => {
+    setExpanded(prev => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
   }, []);
 
+  const expandAll = useCallback(() => {
+    const allKeys = viewMode === "character"
+      ? byCharacterRef.current.map(g => `char-${g.key}`)
+      : groupedRef.current.map(g => g.key);
+    setExpanded(new Set(allKeys));
+  }, [viewMode]);
+
+  const collapseAll = useCallback(() => {
+    setExpanded(new Set());
+  }, []);
+
   const grouped = useMemo(() => groupLinesByCategory(lines), [lines]);
   const byCharacter = useMemo(() => groupLinesByCharacter(lines), [lines]);
   const shuffled = useMemo(() => shuffleArray(lines), [lines, shuffleSeed]);
 
+  // Refs for expand/collapse all
+  const groupedRef = { current: grouped };
+  const byCharacterRef = { current: byCharacter };
+
   const handleViewChange = useCallback((mode) => {
     setViewMode(mode);
+    setExpanded(new Set());
     if (mode === "shuffle") setShuffleSeed(s => s + 1);
   }, []);
 
@@ -126,6 +178,32 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
       forged={l.source === "forged"}
     />
   );
+
+  const renderGridCard = (l) => (
+    <GridCard
+      key={l.id}
+      line={l.line}
+      category={l.category}
+      character={l.character || "wick"}
+      copied={copiedId === l.id}
+      onCopy={() => onCopy(l.line, l.id)}
+      onSave={onSave}
+      saved={savedSet.has(l.line)}
+      forged={l.source === "forged"}
+    />
+  );
+
+  const renderCard = layout === "grid" ? renderGridCard : renderLineCard;
+
+  const renderCards = (items) => (
+    <div className={`fade-in ${layout === "grid" ? "quote-grid" : "quote-list"}`}>
+      {items.map(renderCard)}
+    </div>
+  );
+
+  const allExpanded = viewMode === "character"
+    ? byCharacter.every(g => expanded.has(`char-${g.key}`))
+    : grouped.every(g => expanded.has(g.key));
 
   return (
     <div style={{ padding: "14px 16px 0" }}>
@@ -149,43 +227,80 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
           </div>
         </div>
 
-        {/* View mode toggle */}
-        <div style={{ display: "flex", gap: 2, background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: 2 }}>
-          {VIEW_MODES.map(m => (
-            <button
-              key={m.key}
-              onClick={() => handleViewChange(m.key)}
-              title={m.label}
-              style={{
-                background: viewMode === m.key ? "rgba(255,255,255,0.08)" : "transparent",
-                border: "none", borderRadius: 6, padding: "4px 10px",
-                fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
-                color: viewMode === m.key ? "#f5f5f7" : "#4b5563",
-                cursor: "pointer", transition: "all 0.2s ease",
-                display: "flex", alignItems: "center", gap: 3,
-              }}
-            >
-              <span style={{ fontSize: 11 }}>{m.icon}</span>
-              {m.label}
-            </button>
-          ))}
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          {/* Layout toggle */}
+          <div style={{ display: "flex", gap: 1, background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: 2 }}>
+            {LAYOUT_MODES.map(m => (
+              <button
+                key={m.key}
+                onClick={() => setLayout(m.key)}
+                title={m.key === "list" ? "List view" : "Grid view"}
+                style={{
+                  background: layout === m.key ? "rgba(255,255,255,0.1)" : "transparent",
+                  border: "none", borderRadius: 4, padding: "3px 8px",
+                  fontSize: 13, color: layout === m.key ? "#f5f5f7" : "#4b5563",
+                  cursor: "pointer", transition: "all 0.2s ease",
+                  lineHeight: 1,
+                }}
+              >
+                {m.icon}
+              </button>
+            ))}
+          </div>
+
+          {/* View mode toggle */}
+          <div style={{ display: "flex", gap: 2, background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: 2 }}>
+            {VIEW_MODES.map(m => (
+              <button
+                key={m.key}
+                onClick={() => handleViewChange(m.key)}
+                title={m.label}
+                style={{
+                  background: viewMode === m.key ? "rgba(255,255,255,0.08)" : "transparent",
+                  border: "none", borderRadius: 6, padding: "4px 10px",
+                  fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600,
+                  color: viewMode === m.key ? "#f5f5f7" : "#4b5563",
+                  cursor: "pointer", transition: "all 0.2s ease",
+                  display: "flex", alignItems: "center", gap: 3,
+                }}
+              >
+                <span style={{ fontSize: 11 }}>{m.icon}</span>
+                {m.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Search */}
-      <div style={{ marginBottom: 10 }}>
+      {/* Search + expand/collapse controls */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center" }}>
         <input
           type="text"
           value={search}
           onChange={e => onSearchChange(e.target.value)}
           placeholder="Search lines..."
           style={{
-            width: "100%", padding: "9px 14px", fontSize: 13,
+            flex: 1, padding: "9px 14px", fontSize: 13,
             background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
             borderRadius: 8, color: "#f5f5f7", fontFamily: "'Outfit',sans-serif",
             outline: "none",
           }}
         />
+        {viewMode !== "shuffle" && (
+          <button
+            onClick={allExpanded ? collapseAll : expandAll}
+            title={allExpanded ? "Collapse all" : "Expand all"}
+            style={{
+              background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 8, padding: "9px 12px", cursor: "pointer",
+              fontSize: 11, fontWeight: 700, fontFamily: "'Outfit',sans-serif",
+              color: "#6b7280", transition: "all 0.2s ease",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {allExpanded ? "▲ Collapse" : "▼ Expand all"}
+          </button>
+        )}
       </div>
 
       {/* Empty state */}
@@ -209,14 +324,10 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
             desc={group.meta.desc}
             color={group.meta.color}
             count={group.lines.length}
-            expanded={!collapsed.has(group.key)}
+            expanded={expanded.has(group.key)}
             onToggle={() => toggleSection(group.key)}
           />
-          {!collapsed.has(group.key) && (
-            <div className="fade-in">
-              {group.lines.map(renderLineCard)}
-            </div>
-          )}
+          {expanded.has(group.key) && renderCards(group.lines)}
         </div>
       ))}
 
@@ -229,23 +340,17 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
             desc={group.meta.desc}
             color={group.meta.color}
             count={group.lines.length}
-            expanded={!collapsed.has(`char-${group.key}`)}
+            expanded={expanded.has(`char-${group.key}`)}
             onToggle={() => toggleSection(`char-${group.key}`)}
           />
-          {!collapsed.has(`char-${group.key}`) && (
-            <div className="fade-in">
-              {group.lines.map(renderLineCard)}
-            </div>
-          )}
+          {expanded.has(`char-${group.key}`) && renderCards(group.lines)}
         </div>
       ))}
 
       {/* Shuffled flat list */}
       {viewMode === "shuffle" && (
         <>
-          <div style={{
-            textAlign: "center", marginBottom: 10,
-          }}>
+          <div style={{ textAlign: "center", marginBottom: 10 }}>
             <button
               onClick={() => setShuffleSeed(s => s + 1)}
               style={{
@@ -258,9 +363,7 @@ export default function LineFeed({ lines, copiedId, onCopy, onSave, savedSet, se
               ⟳ Reshuffle
             </button>
           </div>
-          <div className="fade-in">
-            {shuffled.map(renderLineCard)}
-          </div>
+          {renderCards(shuffled)}
         </>
       )}
     </div>
