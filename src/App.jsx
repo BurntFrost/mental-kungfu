@@ -6,6 +6,7 @@ import LeftPanel from "./components/LeftPanel.jsx";
 import RightPanel from "./components/RightPanel.jsx";
 import TrendingToday from "./components/TrendingToday.jsx";
 import LineFeed from "./components/LineFeed.jsx";
+import RotatingFeed from "./components/RotatingFeed.jsx";
 import CharacterProfile from "./components/CharacterProfile.jsx";
 import ForgePanel from "./components/ForgePanel.jsx";
 import SettingsPanel from "./components/SettingsPanel.jsx";
@@ -86,6 +87,157 @@ body { background: var(--bg-0); color: var(--text-1); }
 .shimmer-btn { background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c, #dc2626, #ef4444); background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }
 .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 200; animation: toast-in 0.3s ease-out; pointer-events: none; }
 .toast--exit { animation: toast-out 0.25s ease-in forwards; }
+
+/* === ROTATING FEED === */
+@keyframes hero-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes hero-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-8px) scale(0.98); } }
+@keyframes feed-card-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes dot-fill { from { width: 0%; } to { width: 100%; } }
+@keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.hero-container {
+  margin-bottom: 20px; padding: 2px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(139,92,246,0.04));
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.hero-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 0;
+}
+.hero-label {
+  font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+  color: #ef4444; font-family: 'Outfit',sans-serif;
+  display: flex; align-items: center; gap: 6px;
+}
+.hero-label-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #ef4444;
+  animation: live-pulse 2s ease-in-out infinite;
+}
+.hero-paused-badge {
+  font-size: 9px; font-weight: 700; color: #6b7280;
+  font-family: 'Outfit',sans-serif; letter-spacing: 0.5px;
+  padding: 2px 6px; border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+}
+.hero-control {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer;
+  font-size: 11px; color: #6b7280; transition: all 0.2s ease;
+  font-family: 'Outfit',sans-serif;
+}
+.hero-control:hover { background: rgba(255,255,255,0.08); color: #f5f5f7; }
+
+.hero-quote {
+  padding: 20px 16px 14px; cursor: pointer; position: relative; overflow: hidden;
+}
+.hero-quote--in { animation: hero-in 0.4s ease-out both; }
+.hero-quote--out { animation: hero-out 0.3s ease-in both; }
+.hero-accent {
+  position: absolute; left: 0; top: 16px; bottom: 16px; width: 3px; border-radius: 3px;
+}
+.hero-content { padding-left: 14px; }
+.hero-text {
+  font-size: 22px; font-weight: 600; color: #f5f5f7; line-height: 1.5;
+  font-family: 'Outfit',sans-serif; letter-spacing: -0.2px;
+}
+.hero-meta {
+  display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+}
+.hero-category {
+  font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 5px;
+  font-family: 'Outfit',sans-serif;
+}
+.hero-character {
+  font-size: 12px; color: #888; font-family: 'Outfit',sans-serif;
+}
+.hero-forged {
+  font-size: 10px; font-weight: 800; color: #ef4444;
+  background: rgba(239,68,68,0.1); padding: 2px 6px; border-radius: 4px;
+  font-family: 'Outfit',sans-serif; letter-spacing: 0.5px;
+}
+.hero-save {
+  margin-left: auto; background: none; border: none;
+  cursor: pointer; font-size: 18px; padding: 2px 4px;
+  transition: transform 0.2s ease;
+}
+.hero-save:hover { transform: scale(1.2); }
+.hero-copied {
+  position: absolute; top: 12px; right: 14px;
+  font-size: 11px; color: #22c55e; font-weight: 700;
+  font-family: 'Outfit',sans-serif;
+}
+
+/* Progress dots */
+.hero-dots {
+  display: flex; justify-content: center; gap: 4px;
+  padding: 8px 14px 12px;
+}
+.hero-dot {
+  width: 24px; height: 3px; border-radius: 3px; border: none; padding: 0;
+  background: rgba(255,255,255,0.08); cursor: pointer;
+  position: relative; overflow: hidden; transition: background 0.2s ease;
+}
+.hero-dot:hover { background: rgba(255,255,255,0.15); }
+.hero-dot--active { background: rgba(239,68,68,0.2); }
+.hero-dot-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: #ef4444; border-radius: 3px;
+  animation: dot-fill 5.65s linear;
+}
+
+/* Feed toolbar */
+.feed-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; gap: 8px;
+}
+.feed-toolbar-left { display: flex; align-items: center; gap: 8px; }
+.feed-toolbar-label {
+  font-size: 13px; font-weight: 800; color: #6b7280;
+  letter-spacing: 0.5px; font-family: 'Outfit',sans-serif;
+}
+.feed-toolbar-count {
+  font-size: 11px; color: #4b5563; font-family: 'Outfit',sans-serif;
+  background: rgba(255,255,255,0.04); padding: 2px 6px; border-radius: 8px;
+}
+.feed-search {
+  padding: 7px 12px; font-size: 12px; width: 160px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; color: #f5f5f7; font-family: 'Outfit',sans-serif;
+  outline: none; transition: border-color 0.2s ease;
+}
+.feed-search:focus { border-color: rgba(239,68,68,0.3); }
+.feed-shuffle-btn {
+  background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.12);
+  border-radius: 8px; padding: 7px 12px; cursor: pointer;
+  font-size: 11px; font-weight: 700; font-family: 'Outfit',sans-serif;
+  color: #ef4444; transition: all 0.2s ease; white-space: nowrap;
+}
+.feed-shuffle-btn:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.25); }
+
+/* Feed grid */
+.rotating-feed-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;
+}
+.feed-card-wrapper {
+  animation: feed-card-in 0.4s ease-out both;
+}
+
+/* View toggle in header */
+.view-toggle-bar {
+  display: flex; align-items: center; gap: 2px;
+  background: rgba(255,255,255,0.03); border-radius: 8px; padding: 2px;
+}
+.view-toggle-btn {
+  background: transparent; border: none; border-radius: 6px;
+  padding: 5px 12px; cursor: pointer; font-size: 11px; font-weight: 600;
+  font-family: 'Outfit',sans-serif; color: #4b5563;
+  transition: all 0.2s ease; display: flex; align-items: center; gap: 4px;
+}
+.view-toggle-btn:hover { color: #9ca3af; }
+.view-toggle-btn--active {
+  background: rgba(255,255,255,0.08); color: #f5f5f7;
+}
 
 .cat-tag { position: relative; cursor: help; }
 .cat-tag .cat-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 6px); left: 0; white-space: nowrap; padding: 5px 10px; border-radius: 6px; background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1); color: #c0c0cc; font-size: 13px; font-weight: 500; font-family: 'Outfit',sans-serif; pointer-events: none; transition: opacity 0.15s ease, visibility 0.15s ease; z-index: 30; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
@@ -263,6 +415,18 @@ body { background: var(--bg-0); color: var(--text-1); }
 
 const ALL_LINES = getAllLines();
 
+const HEADER_WRAP = { padding: "16px 16px 0", textAlign: "center" };
+const HEADER_ROW = { display: "flex", alignItems: "center", justifyContent: "center", gap: 8 };
+const HEADER_TITLE = { fontSize: 18, fontWeight: 800, color: "#f5f5f7", letterSpacing: -0.5 };
+const HEADER_SUB = { fontSize: 10, color: "#4b5563", marginTop: 3, letterSpacing: 1, textTransform: "uppercase" };
+const HEADER_TOGGLE_WRAP = { display: "flex", justifyContent: "center", marginTop: 10 };
+const LOGO_STYLE = {
+  width: 28, height: 28, borderRadius: 7,
+  background: "linear-gradient(135deg, #ef4444, #991b1b)",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  fontSize: 14, cursor: "pointer", userSelect: "none", position: "relative",
+};
+
 export default function MentalKungFuApp() {
   // Filters
   const [activeCharacters, setActiveCharacters] = useState(new Set());
@@ -273,12 +437,15 @@ export default function MentalKungFuApp() {
   const [search, setSearch] = useState("");
 
   // UI state
+  const [viewStyle, setViewStyle] = useState("feed"); // "feed" | "classic"
   const [copiedId, setCopiedId] = useState(null);
   const [toast, setToast] = useState({ message: "", visible: false });
   const [profileChar, setProfileChar] = useState(null);
   const [forgeOpen, setForgeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const toastTimer = useRef(null);
+  const toastClearTimer = useRef(null);
+  const copyTimer = useRef(null);
   const scrollRef = useRef(null);
 
   // Easter egg: click logo 10 times to reveal build version
@@ -298,6 +465,14 @@ export default function MentalKungFuApp() {
     clickTimer.current = setTimeout(() => setLogoClicks(0), 2000);
   }, []);
 
+  // Cleanup untracked timers on unmount
+  useEffect(() => {
+    return () => {
+      clearTimeout(clickTimer.current);
+      clearTimeout(copyTimer.current);
+    };
+  }, []);
+
   // Data hooks
   const { savedLines, savedSet, toggleSave } = useSavedLines();
   const { batches, addBatch, deleteBatch, clearAll } = useForgedBatches();
@@ -305,9 +480,10 @@ export default function MentalKungFuApp() {
 
   const showToast = useCallback((message) => {
     clearTimeout(toastTimer.current);
+    clearTimeout(toastClearTimer.current);
     setToast({ message, visible: true });
     toastTimer.current = setTimeout(() => setToast(t => ({ ...t, visible: false })), 1800);
-    setTimeout(() => setToast({ message: "", visible: false }), 2100);
+    toastClearTimer.current = setTimeout(() => setToast({ message: "", visible: false }), 2100);
   }, []);
 
   const { forging, forgeError, forgeStatus, autoForge, runForge, toggleAuto } = useForge({
@@ -321,7 +497,8 @@ export default function MentalKungFuApp() {
     navigator.clipboard?.writeText(line);
     setCopiedId(id);
     showToast("Copied to clipboard");
-    setTimeout(() => setCopiedId(null), 2000);
+    clearTimeout(copyTimer.current);
+    copyTimer.current = setTimeout(() => setCopiedId(null), 2000);
   }, [showToast]);
 
   // Filter toggles
@@ -372,7 +549,7 @@ export default function MentalKungFuApp() {
     return lines;
   }, [batches]);
 
-  // Filtered lines (exclude forged — they show in Trending Today)
+  // Filtered lines (static)
   const filteredLines = useMemo(() => {
     return filterLines(ALL_LINES, {
       characters: activeCharacters,
@@ -384,6 +561,24 @@ export default function MentalKungFuApp() {
       search,
     });
   }, [activeCharacters, activeMoods, activeEmotions, activeCategories, savedOnly, savedSet, search]);
+
+  // Filtered forged lines (same filters as static)
+  const filteredForgedLines = useMemo(() => {
+    return filterLines(forgedFeedLines, {
+      characters: activeCharacters,
+      moods: activeMoods,
+      emotions: activeEmotions,
+      categories: activeCategories,
+      savedOnly,
+      savedSet,
+      search,
+    });
+  }, [forgedFeedLines, activeCharacters, activeMoods, activeEmotions, activeCategories, savedOnly, savedSet, search]);
+
+  // Combined feed: forged + static
+  const combinedFeed = useMemo(() => {
+    return [...filteredForgedLines, ...filteredLines];
+  }, [filteredForgedLines, filteredLines]);
 
   const handleHome = useCallback(() => {
     setActiveCharacters(new Set());
@@ -412,46 +607,66 @@ export default function MentalKungFuApp() {
 
         <div ref={scrollRef} className="center-column">
           {/* Header */}
-          <div style={{ padding: "16px 16px 0", textAlign: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <div style={HEADER_WRAP}>
+            <div style={HEADER_ROW}>
               <div
                 onClick={handleLogoClick}
                 className={versionUnlocked ? "version-tooltip" : ""}
                 data-version={`v${__APP_VERSION__} · build ${__BUILD_NUMBER__} · ${new Date(__BUILD_TIME__).toLocaleDateString()}`}
-                style={{
-                  width: 28, height: 28, borderRadius: 7,
-                  background: "linear-gradient(135deg, #ef4444, #991b1b)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 14, cursor: "pointer", userSelect: "none",
-                  position: "relative",
-                }}
+                style={LOGO_STYLE}
               >⚡</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#f5f5f7", letterSpacing: -0.5 }}>
-                Mental Kung Fu
-              </div>
+              <div style={HEADER_TITLE}>Mental Kung Fu</div>
             </div>
-            <div style={{ fontSize: 10, color: "#4b5563", marginTop: 3, letterSpacing: 1, textTransform: "uppercase" }}>
-              Tactical Mindset Engine
+            <div style={HEADER_SUB}>Tactical Mindset Engine</div>
+            {/* View style toggle */}
+            <div style={HEADER_TOGGLE_WRAP}>
+              <div className="view-toggle-bar">
+                <button
+                  className={`view-toggle-btn ${viewStyle === "feed" ? "view-toggle-btn--active" : ""}`}
+                  onClick={() => setViewStyle("feed")}
+                >
+                  <span style={{ fontSize: 12 }}>◉</span> Feed
+                </button>
+                <button
+                  className={`view-toggle-btn ${viewStyle === "classic" ? "view-toggle-btn--active" : ""}`}
+                  onClick={() => setViewStyle("classic")}
+                >
+                  <span style={{ fontSize: 11 }}>▦</span> Classic
+                </button>
+              </div>
             </div>
           </div>
 
-          <TrendingToday
-            batches={batches}
-            copiedId={copiedId}
-            onCopy={copyLine}
-            onSave={toggleSave}
-            savedSet={savedSet}
-          />
-
-          <LineFeed
-            lines={filteredLines}
-            copiedId={copiedId}
-            onCopy={copyLine}
-            onSave={toggleSave}
-            savedSet={savedSet}
-            search={search}
-            onSearchChange={setSearch}
-          />
+          {viewStyle === "feed" ? (
+            <RotatingFeed
+              lines={combinedFeed}
+              copiedId={copiedId}
+              onCopy={copyLine}
+              onSave={toggleSave}
+              savedSet={savedSet}
+              search={search}
+              onSearchChange={setSearch}
+            />
+          ) : (
+            <>
+              <TrendingToday
+                batches={batches}
+                copiedId={copiedId}
+                onCopy={copyLine}
+                onSave={toggleSave}
+                savedSet={savedSet}
+              />
+              <LineFeed
+                lines={filteredLines}
+                copiedId={copiedId}
+                onCopy={copyLine}
+                onSave={toggleSave}
+                savedSet={savedSet}
+                search={search}
+                onSearchChange={setSearch}
+              />
+            </>
+          )}
         </div>
 
         <LeftPanel
