@@ -9,6 +9,26 @@
             "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q '\"file_path\".*package-lock\\|\"file_path\".*yarn.lock'; then echo 'BLOCK: Do not edit lock files directly' && exit 1; fi"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'forge-api'; then echo 'CAUTION: This file handles API keys exposed to the browser via anthropic-dangerous-direct-browser-access. Ensure no hardcoded secrets.'; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'src/data/'; then node /Users/steve/Code/mental-kungfu-project/.claude/hooks/check-data-consistency.mjs 2>&1 || true; fi"
+          }
+        ]
       }
     ]
   }
